@@ -1,0 +1,11 @@
+pytz
+lxml
+pint
+python-dateutil
+cryptography
+nose
+coverage
+nose-exclude
+regex
+requests
+pyyaml

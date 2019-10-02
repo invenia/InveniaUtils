@@ -1,0 +1,20 @@
+"Tox (Linux)":
+  image: amazonlinux:2
+  tags:
+    - docker-ci
+  before_script:
+    # Update the test_requirements to clone gitlab requirements
+    # - sed -i "s!git+ssh://git@gitlab.invenia.ca!git+https://gitlab-ci-token:$CI_BUILD_TOKEN@gitlab.invenia.ca!g" requirements.txt
+    - yum -y install yum-utils https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    # Install "eccodes-devel" for "pygrib".
+    # - yum -y install eccodes-devel
+    - yum-config-manager --enable epel > /dev/null
+    # - yum -y install eccodes
+    # Install python 3
+    - yum -y install python3 python3-pip
+    - pip3 install pyyaml jinja2
+    # Install utils system requirements
+    - yum -y install python3-devel gcc git
+    - pip3 install tox flake8 awscli
+  script:
+    - tox -r
