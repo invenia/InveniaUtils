@@ -4,7 +4,7 @@
     - docker-ci
   before_script:
     # Update the test_requirements to clone gitlab requirements
-    # - sed -i "s!git+ssh://git@gitlab.invenia.ca!git+https://gitlab-ci-token:$CI_BUILD_TOKEN@gitlab.invenia.ca!g" requirements.txt
+    - sed -i "s!git+ssh://git@gitlab.invenia.ca!git+https://gitlab-ci-token:$CI_BUILD_TOKEN@gitlab.invenia.ca!g" requirements.txt
     - yum -y install yum-utils https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     # Install "eccodes-devel" for "pygrib".
     # - yum -y install eccodes-devel
