@@ -4,8 +4,8 @@ from itertools import repeat
 
 def angle_mean_radians(angles, weights=repeat(1)):
     return math.atan2(
-        math.fsum(math.sin(a) * w for a, w in zip(angles, weights)) / len(angles),
-        math.fsum(math.cos(a) * w for a, w in zip(angles, weights)) / len(angles),
+        math.fsum(math.sin(a) * w for a, w in zip(angles, weights)) / len(angles), # noqa
+        math.fsum(math.cos(a) * w for a, w in zip(angles, weights)) / len(angles), # noqa
     ) % (math.pi * 2)
 
 
