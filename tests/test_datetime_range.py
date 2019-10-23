@@ -6,9 +6,10 @@ import unittest
 from datetime import datetime, timedelta
 
 from inveniautils.dates import localize
-from inveniautils.datetime_range import Bound, DatetimeRange
-from inveniautils.datetime_range import POS_INF_DATETIME, start_before_key
-from inveniautils.datetime_range import period_ending_as_range, cmp_ranges
+from inveniautils.datetime_range import (
+    Bound, DatetimeRange, POS_INF_DATETIME, start_before_key, period_ending_as_range,
+    period_beginning_as_range, cmp_ranges,
+)
 
 from dateutil.parser import parse as datetime_parser
 from dateutil.relativedelta import relativedelta
@@ -2660,6 +2661,45 @@ class TestPeriodEndingAsRange(unittest.TestCase):
             )
         )
 
+
+class TestPeriodBeginningAsRange(unittest.TestCase):
+    def test_ambiguous(self):
+        wpg = pytz.timezone("America/Winnipeg")
+        bounds = (Bound.INCLUSIVE, Bound.EXCLUSIVE)
+
+        self.assertEqual(
+            period_beginning_as_range(
+                localize(datetime(2013, 11, 3, 1), wpg, is_dst=False),
+                timedelta(hours=1),
+            ),
+            DatetimeRange(
+                localize(datetime(2013, 11, 3, 1), wpg, is_dst=False),
+                localize(datetime(2013, 11, 3, 2), wpg),
+                bounds,
+            )
+        )
+        self.assertEqual(
+            period_beginning_as_range(
+                localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
+                timedelta(hours=1),
+            ),
+            DatetimeRange(
+                localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
+                localize(datetime(2013, 11, 3, 1), wpg, is_dst=False),
+                bounds,
+            )
+        )
+        self.assertEqual(
+            period_beginning_as_range(
+                localize(datetime(2013, 11, 3, 0), wpg),
+                timedelta(hours=1),
+            ),
+            DatetimeRange(
+                localize(datetime(2013, 11, 3, 0), wpg),
+                localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
+                bounds,
+            )
+        )
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

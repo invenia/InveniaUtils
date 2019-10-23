@@ -103,6 +103,18 @@ def period_ending_as_range(dt, period):
     )
 
 
+def period_beginning_as_range(dt, period):
+    """
+    Converts a implicit period-beginning datetime and converts it into an
+    appropriate datetime range. May not work as expected if you want
+    units such as "a day".
+    """
+    return DatetimeRange(
+        dt, normalize(dt + period),
+        (Bound.INCLUSIVE, Bound.EXCLUSIVE)
+    )
+
+
 # Compare two DatetimeRange objects.
 # Range a is considered to be less than b if it starts before b.
 # If a and b have the same start date, compare their end dates.
