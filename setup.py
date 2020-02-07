@@ -2,7 +2,8 @@ from os import path
 from setuptools import find_packages, setup
 import inveniautils
 
-REQUIREMENTS = ['pytz', 'lxml', 'pint', 'python-dateutil', 'cryptography']
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
 
 setup(
     name="InveniaUtils",
@@ -11,5 +12,5 @@ setup(
     author="Ryan Froese",
     url="https://gitlab.invenia.ca/invenia/inveniautils",
     packages=find_packages(exclude=["tests"]),
-    install_requires=REQUIREMENTS,
+    install_requires=requirements,
 )
