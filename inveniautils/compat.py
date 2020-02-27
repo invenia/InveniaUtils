@@ -3,7 +3,7 @@ def cmp(a, b):
 
     See https://docs.python.org/3.0/whatsnew/3.0.html#ordering-comparisons
     """
-    if hasattr(a, '__cmp__') and type(a) == type(b):
+    if hasattr(a, "__cmp__") and type(a) == type(b):
         return a.__cmp__(b)
     else:
         if a is None and b is None:

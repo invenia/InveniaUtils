@@ -79,7 +79,7 @@ class DateEmulator(object):
         success = False
 
         if logger.isEnabledFor(logging.DEBUG):
-            print('')  # Print empty line
+            print("")  # Print empty line
         logger.debug("TARGET_DATE {}".format(target_date))
 
         while not success:
@@ -328,7 +328,7 @@ class TestLimiter(unittest.TestCase):
                 limiter.status(success=False)
             self.assertLess(limiter.adjustment, timedelta.max.total_seconds())
         except OverflowError:
-            self.fail('Adjustment Values too large')
+            self.fail("Adjustment Values too large")
 
     def test_min_adjustment(self):
         limiter = Limiter()
@@ -340,9 +340,11 @@ class TestLimiter(unittest.TestCase):
                 limiter.interval = 0
                 limiter.history = copy.deepcopy(history)
                 limiter.status(success=True)
-            self.assertGreater(limiter.adjustment, timedelta.min.total_seconds())  # noqa: E501
+            self.assertGreater(
+                limiter.adjustment, timedelta.min.total_seconds()
+            )  # noqa: E501
         except OverflowError:
-            self.fail('Adjustment Values too negatively large')
+            self.fail("Adjustment Values too negatively large")
 
 
 class TestStaticLimiter(unittest.TestCase):
@@ -364,10 +366,7 @@ class TestScheduling(unittest.TestCase):
         # - Requires the use of the binary search or else it will skip a
         #   target.
 
-        limiter = Limiter(
-            min_interval=600,
-            since_success=True,
-        )
+        limiter = Limiter(min_interval=600, since_success=True)
         now = datetime(2000, 1, 1, 1, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -386,7 +385,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 10, 20, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             self.assertEqual(attempts, expected_attempts)
@@ -408,10 +409,7 @@ class TestScheduling(unittest.TestCase):
         # - Shows how the binary search can be inefficient if used
         #   too aggressively.
 
-        limiter = Limiter(
-            min_interval=60,
-            since_success=True,
-        )
+        limiter = Limiter(min_interval=60, since_success=True)
         now = datetime(2000, 1, 1, 1, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -437,7 +435,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 17, 20, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             self.assertEqual(attempts, expected_attempts)
@@ -459,10 +459,7 @@ class TestScheduling(unittest.TestCase):
         # - Shows how the binary search can be inefficient if used
         #   too aggressively.
 
-        limiter = Limiter(
-            min_interval=1,
-            since_success=True,
-        )
+        limiter = Limiter(min_interval=1, since_success=True)
         now = datetime(2000, 1, 1, 1, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -491,7 +488,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 20, 20, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             self.assertEqual(attempts, expected_attempts)
@@ -509,10 +508,7 @@ class TestScheduling(unittest.TestCase):
         # Ensure that publication intervals which are not divisible by
         # the min_interval can still behave reasonibly.
 
-        limiter = Limiter(
-            min_interval=60 * 7,
-            since_success=True,
-        )
+        limiter = Limiter(min_interval=60 * 7, since_success=True)
         now = datetime(2000, 1, 1, 1, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -542,11 +538,13 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 21, 20, tzinfo=utc): 3,  # 21:25
             datetime(2000, 1, 1, 22, 20, tzinfo=utc): 1,  # 22:21
             datetime(2000, 1, 1, 23, 20, tzinfo=utc): 3,  # 23:24
-            datetime(2000, 1, 2, 0, 20, tzinfo=utc): 1,   # 00:20
-            datetime(2000, 1, 2, 1, 20, tzinfo=utc): 3,   # 01:23
+            datetime(2000, 1, 2, 0, 20, tzinfo=utc): 1,  # 00:20
+            datetime(2000, 1, 2, 1, 20, tzinfo=utc): 3,  # 01:23
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             self.assertEqual(attempts, expected_attempts)
@@ -561,11 +559,7 @@ class TestScheduling(unittest.TestCase):
             #     self.assertEqual(env.now, target_date)
 
     def test_shift_earlier(self):
-        limiter = Limiter(
-            initial_interval=3600,
-            min_interval=600,
-            since_success=True,
-        )
+        limiter = Limiter(initial_interval=3600, min_interval=600, since_success=True)
         now = datetime(2000, 1, 1, 0, 20, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -584,7 +578,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 8, 50, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             self.assertEqual(attempts, expected_attempts)
@@ -601,11 +597,7 @@ class TestScheduling(unittest.TestCase):
             #     self.assertEqual(env.now, target_date)
 
     def test_shift_later(self):
-        limiter = Limiter(
-            initial_interval=3600,
-            min_interval=600,
-            since_success=True,
-        )
+        limiter = Limiter(initial_interval=3600, min_interval=600, since_success=True)
         now = datetime(2000, 1, 1, 0, 20, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -630,7 +622,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 15, 50, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             self.assertEqual(attempts, expected_attempts)
@@ -647,11 +641,7 @@ class TestScheduling(unittest.TestCase):
             #     self.assertEqual(env.now, target_date)
 
     def test_late(self):
-        limiter = Limiter(
-            initial_interval=3600,
-            min_interval=600,
-            since_success=True,
-        )
+        limiter = Limiter(initial_interval=3600, min_interval=600, since_success=True)
         now = datetime(2000, 1, 1, 0, 20, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -669,7 +659,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 9, 20, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             self.assertEqual(attempts, expected_attempts)
@@ -688,11 +680,7 @@ class TestScheduling(unittest.TestCase):
     # Stability override fault
     @unittest.expectedFailure
     def test_freq_change(self):
-        limiter = Limiter(
-            initial_interval=3600,
-            min_interval=600,
-            since_success=True,
-        )
+        limiter = Limiter(initial_interval=3600, min_interval=600, since_success=True)
         now = datetime(2000, 1, 1, 0, 20, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -716,7 +704,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 8, 50, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             # attempts = env.emulate_til_successful(target_date)
 
             # self.assertEqual(attempts, expected_attempts)
@@ -755,7 +745,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 8, 20, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             self.assertEqual(attempts, expected_attempts)
@@ -799,7 +791,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 8, 50, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             # attempts = env.emulate_til_successful(target_date)
 
             # self.assertEqual(attempts, expected_attempts)
@@ -817,10 +811,7 @@ class TestScheduling(unittest.TestCase):
 
     @unittest.expectedFailure
     def test_tuning_nightmare_seconds(self):
-        limiter = Limiter(
-            min_interval=1,
-            since_success=True,
-        )
+        limiter = Limiter(min_interval=1, since_success=True)
         now = datetime(2000, 1, 1, 1, tzinfo=utc)
         env = DateEmulator(limiter, now)
 
@@ -849,7 +840,9 @@ class TestScheduling(unittest.TestCase):
             datetime(2000, 1, 1, 20, 20, tzinfo=utc): 2,
         }
 
-        for target_date, expected_attempts in sorted(target_date_attempts.items()):  # noqa: E501
+        for target_date, expected_attempts in sorted(
+            target_date_attempts.items()
+        ):  # noqa: E501
             attempts = env.emulate_til_successful(target_date)
 
             # self.assertEqual(attempts, expected_attempts)
@@ -864,6 +857,6 @@ class TestScheduling(unittest.TestCase):
                 self.assertEqual(env.now, target_date)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()

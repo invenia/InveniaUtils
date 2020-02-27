@@ -14,7 +14,7 @@ class TestXMLUtil(unittest.TestCase):
     def test_iterparse(self):
         xml = BytesIO(b"<tag1>hello there</tag1>")
 
-        iterable = iterparse(xml, events=['end'])
+        iterable = iterparse(xml, events=["end"])
         for event, element in iterable:
-            self.assertEqual(element.tag, 'tag1')
-            self.assertEqual(element.text, 'hello there')
+            self.assertEqual(element.tag, "tag1")
+            self.assertEqual(element.text, "hello there")

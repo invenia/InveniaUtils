@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from inveniautils.dates import utc
 
 logger = logging.getLogger(__name__)
-Status = namedtuple('Status', ['reported', 'success'])
+Status = namedtuple("Status", ["reported", "success"])
 
 # timedelta will overflow before sys.max is reached so timedelta.max is used
 MAX_SECONDS = timedelta.max.total_seconds()
@@ -63,8 +63,7 @@ class StatusHistory(object):
 
 class Limiter(object):
     def __init__(
-        self, initial_interval=0, min_interval=None, since_success=False,
-        debug=False,
+        self, initial_interval=0, min_interval=None, since_success=False, debug=False
     ):
         # The smallest allowed interval. Needs to be assigned prior to
         # interval assignment.
@@ -146,7 +145,7 @@ class Limiter(object):
         if duration is not None and duration < 0:
             raise ValueError("Interval must be positive.")
 
-        smallest = getattr(self, '_min_success_delta', None)
+        smallest = getattr(self, "_min_success_delta", None)
         if duration is None or smallest is None or duration < smallest:
             self._min_success_delta = duration
 
@@ -168,7 +167,7 @@ class Limiter(object):
         if duration is not None and duration < 0:
             raise ValueError("Interval must be positive.")
 
-        largest = getattr(self, '_max_failure_delta', None)
+        largest = getattr(self, "_max_failure_delta", None)
         if duration is None or largest is None or duration > largest:
             self._max_failure_delta = duration
 
@@ -232,11 +231,9 @@ class Limiter(object):
 
         attempted_interval = self.interval
         next_interval = None
-        search_type = 'U'  # "Unknown"
+        search_type = "U"  # "Unknown"
 
-        success_history = [
-            status.success for status in self.history.status[-3:]
-        ]
+        success_history = [status.success for status in self.history.status[-3:]]
 
         # Mark system as unstable if we have 2 sequential failures.
         if success_history[-2:] == [False, False]:
@@ -249,7 +246,11 @@ class Limiter(object):
         #     self.fine_tuning = False
 
         # Works well for larger min_intervals but not for smaller.
-        if delta is not None and self.stable_interval is not None and delta >= self.stable_interval * 2:  # noqa: E501
+        if (
+            delta is not None
+            and self.stable_interval is not None
+            and delta >= self.stable_interval * 2
+        ):  # noqa: E501
             self.fine_tuning = False
 
         if success and self.stable and success_history[-2:] == [False, True]:
@@ -261,12 +262,18 @@ class Limiter(object):
         if success_history[-3:] == [True, False, True]:
             self.stable = True
 
-        if next_interval is None and self.min_success_delta is not None and self.max_failure_delta is not None:  # noqa: E501
+        if (
+            next_interval is None
+            and self.min_success_delta is not None
+            and self.max_failure_delta is not None
+        ):  # noqa: E501
             self.adjustment = 0  # Reset
 
             # The smallest success interval should always be larger than
             # the largest failure interval.
-            if self.min_success_delta - self.max_failure_delta > self.min_interval:  # noqa: E501
+            if (
+                self.min_success_delta - self.max_failure_delta > self.min_interval
+            ):  # noqa: E501
                 low = self.max_failure_delta
                 high = self.min_success_delta
 
@@ -276,7 +283,7 @@ class Limiter(object):
                 # min and max are integers an integer is returned.
                 next_interval = low + int(round((high - low) / 2))
 
-                search_type = 'B'  # "Binary"
+                search_type = "B"  # "Binary"
             else:
                 # Reset one of the boundaries when they approach each other.
                 if success:
@@ -285,14 +292,16 @@ class Limiter(object):
                 else:
                     self.min_success_delta = None
 
-                search_type = 'R'  # "Reset"
+                search_type = "R"  # "Reset"
 
         # Use a geometric progression to find our initial boundaries.
-        if next_interval is None and (self.min_success_delta is None or self.max_failure_delta is None):  # noqa: E501
+        if next_interval is None and (
+            self.min_success_delta is None or self.max_failure_delta is None
+        ):  # noqa: E501
             adjustment = self.adjustment
 
             if self.max_failure_delta and adjustment <= 0:
-                adjustment = self.min_interval   # Increase when invalid.
+                adjustment = self.min_interval  # Increase when invalid.
 
             elif self.min_success_delta and adjustment >= 0:
                 adjustment = -self.min_interval  # Reduce when valid.
@@ -308,10 +317,10 @@ class Limiter(object):
             if delta is not None and delta >= attempted_interval:
                 next_interval = attempted_interval + adjustment
                 self.adjustment = adjustment
-                search_type = 'G'  # "Geometric"
+                search_type = "G"  # "Geometric"
             else:
                 next_interval = attempted_interval
-                search_type = 'P'  # "Persist"
+                search_type = "P"  # "Persist"
 
         self.interval = max(next_interval, self.min_interval)
         # calculate the effective actual adjustment, and store that.
@@ -321,13 +330,14 @@ class Limiter(object):
             self.adjustment = attempted_interval - self.interval
 
         if logger.isEnabledFor(logging.DEBUG):
+
             def format_seconds(num):
                 if num is None:
-                    return '?'
+                    return "?"
                 elif num < 0:
-                    return '-{}'.format(timedelta(seconds=-num))
+                    return "-{}".format(timedelta(seconds=-num))
                 else:
-                    return '{}'.format(timedelta(seconds=num))
+                    return "{}".format(timedelta(seconds=num))
 
             logger.debug(
                 "{} "
@@ -340,20 +350,19 @@ class Limiter(object):
                 "type: {} "
                 "adjustment {} "
                 "stable: {} "
-                "tune: {} ".
-                format(
+                "tune: {} ".format(
                     reported,
                     format_seconds(delta),
                     format_seconds(attempted_interval),
                     format_seconds(self.max_failure_delta),
                     format_seconds(self.min_success_delta),
                     format_seconds(next_interval),
-                    'T' if success else 'F',
+                    "T" if success else "F",
                     search_type,
                     str(format_seconds(self.adjustment)),
                     # self.num_stable if self.num_stable is not None else '?',
-                    'T' if self.stable else 'F',
-                    'T' if self.fine_tuning else 'F',
+                    "T" if self.stable else "F",
+                    "T" if self.fine_tuning else "F",
                 )
             )
 

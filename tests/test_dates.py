@@ -3,10 +3,20 @@ import unittest
 from datetime import datetime, timedelta
 
 from inveniautils.dates import (
-    GUESS_DST, datetime_extract, estimate_content_end, estimate_latest_release,
-    format_to_regex, localize, round_datetime, round_timedelta, split, contains,
-    estimate_latest, localize_hour_ending, localize_period_ending,
-    timezone_transitions
+    GUESS_DST,
+    datetime_extract,
+    estimate_content_end,
+    estimate_latest_release,
+    format_to_regex,
+    localize,
+    round_datetime,
+    round_timedelta,
+    split,
+    contains,
+    estimate_latest,
+    localize_hour_ending,
+    localize_period_ending,
+    timezone_transitions,
 )
 
 from inveniautils.dates import timezone as timezone_util
@@ -17,7 +27,7 @@ from dateutil.relativedelta import relativedelta
 from pytz import timezone, utc
 from pytz.exceptions import NonExistentTimeError, AmbiguousTimeError
 
-wpg = timezone('America/Winnipeg')
+wpg = timezone("America/Winnipeg")
 
 
 class TestLocalize(unittest.TestCase):
@@ -48,10 +58,7 @@ class TestLocalize(unittest.TestCase):
         with self.assertRaises(NonExistentTimeError):
             localize(dt, wpg, is_dst=None)
 
-        self.assertEqual(
-            localize(dt, wpg, is_dst=GUESS_DST),
-            wpg.localize(dt),
-        )
+        self.assertEqual(localize(dt, wpg, is_dst=GUESS_DST), wpg.localize(dt))
 
         with self.assertRaises(NonExistentTimeError):
             localize(dt, wpg, is_dst=True)
@@ -66,87 +73,70 @@ class TestLocalize(unittest.TestCase):
         with self.assertRaises(AmbiguousTimeError):
             localize(dt, wpg, is_dst=None)
 
+        self.assertEqual(localize(dt, wpg, is_dst=GUESS_DST), wpg.localize(dt))
+        self.assertEqual(localize(dt, wpg, is_dst=True), wpg.localize(dt, is_dst=True))
         self.assertEqual(
-            localize(dt, wpg, is_dst=GUESS_DST),
-            wpg.localize(dt),
-        )
-        self.assertEqual(
-            localize(dt, wpg, is_dst=True),
-            wpg.localize(dt, is_dst=True),
-        )
-        self.assertEqual(
-            localize(dt, wpg, is_dst=False),
-            wpg.localize(dt, is_dst=False),
+            localize(dt, wpg, is_dst=False), wpg.localize(dt, is_dst=False)
         )
 
 
 class TestDatetimeExtract(unittest.TestCase):
     def test_basic(self):
-        test = '20140102_030405'
-        regexp = format_to_regex('%Y%m%d_%H%M%S%f?')
+        test = "20140102_030405"
+        regexp = format_to_regex("%Y%m%d_%H%M%S%f?")
 
         result = datetime_extract(test, regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5))
 
-        result = datetime_extract(test + '006', regexp)
+        result = datetime_extract(test + "006", regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5, 6000))
 
-        result = datetime_extract(test + '06', regexp)
+        result = datetime_extract(test + "06", regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5, 60000))
 
-        result = datetime_extract(test + '6', regexp)
+        result = datetime_extract(test + "6", regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5, 600000))
 
     def test_digits(self):
-        test = '20140102_030405'
-        regexp = format_to_regex('%Y%m%d_%H%M%S%3f?')
+        test = "20140102_030405"
+        regexp = format_to_regex("%Y%m%d_%H%M%S%3f?")
 
         result = datetime_extract(test, regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5))
 
-        result = datetime_extract(test + '006', regexp)
+        result = datetime_extract(test + "006", regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5, 6000))
 
         # Treated as extra data and ignored.
-        result = datetime_extract(test + '06', regexp)
+        result = datetime_extract(test + "06", regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5))
 
         # Treated as extra data and ignored.
-        result = datetime_extract(test + '6', regexp)
+        result = datetime_extract(test + "6", regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5))
 
     def test_anchored(self):
-        test = '20140102_030405'
-        regexp = format_to_regex('^%Y%m%d_%H%M%S%3f?$')
+        test = "20140102_030405"
+        regexp = format_to_regex("^%Y%m%d_%H%M%S%3f?$")
 
         result = datetime_extract(test, regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5))
 
-        result = datetime_extract(test + '006', regexp)
+        result = datetime_extract(test + "006", regexp)
         self.assertEqual(result, datetime(2014, 1, 2, 3, 4, 5, 6000))
 
         # Anchoring and forcing the width of microseconds causes the
         # expression not to match. Note the exception only occurs when
         # posessive qualifiers.
-        self.assertRaises(
-            ValueError,
-            datetime_extract,
-            test + '06',
-            regexp,
-        )
+        self.assertRaises(ValueError, datetime_extract, test + "06", regexp)
 
-        self.assertRaises(
-            ValueError,
-            datetime_extract,
-            test + '6',
-            regexp,
-        )
+        self.assertRaises(ValueError, datetime_extract, test + "6", regexp)
 
 
 class TestDatetimeParser(unittest.TestCase):
     def test_empty(self):
         # python-dateutil v2.4.2 was not throwing an exception
-        self.assertRaises(ValueError, datetime_parser, '')
+        self.assertRaises(ValueError, datetime_parser, "")
 
 
 class TestRoundDatetime(unittest.TestCase):
@@ -231,8 +221,8 @@ class TestRoundDatetime(unittest.TestCase):
         Basic timezone support for round_datetime.
         """
         test = {
-            'dt': datetime(2013, 1, 2, 3, 4, 5, tzinfo=utc),
-            'interval': timedelta(hours=1),
+            "dt": datetime(2013, 1, 2, 3, 4, 5, tzinfo=utc),
+            "interval": timedelta(hours=1),
         }
         expected = datetime(2013, 1, 2, 3, tzinfo=utc)
 
@@ -244,11 +234,11 @@ class TestRoundDatetime(unittest.TestCase):
         """
         Rounding over a daylight saving time transition.
         """
-        amsterdam = timezone('Europe/Amsterdam')
+        amsterdam = timezone("Europe/Amsterdam")
         test = {
-            'dt': amsterdam.localize(datetime(2002, 10, 27, 12)),
-            'interval': timedelta(days=1),
-            'floor': True,
+            "dt": amsterdam.localize(datetime(2002, 10, 27, 12)),
+            "interval": timedelta(days=1),
+            "floor": True,
         }
         expected = amsterdam.localize(datetime(2002, 10, 27))
 
@@ -266,12 +256,12 @@ class TestRoundDatetime(unittest.TestCase):
         Read this for details on badly created datetimes.
         http://pytz.sourceforge.net/#localized-times-and-date-arithmetic
         """
-        amsterdam = timezone('Europe/Amsterdam')
+        amsterdam = timezone("Europe/Amsterdam")
         test = {
             # Don't set timezones like this!
-            'dt': datetime(2002, 10, 28, 12, tzinfo=amsterdam),
-            'interval': timedelta(days=1),
-            'floor': True,
+            "dt": datetime(2002, 10, 28, 12, tzinfo=amsterdam),
+            "interval": timedelta(days=1),
+            "floor": True,
         }
         expected = amsterdam.localize(datetime(2002, 10, 28))
 
@@ -283,11 +273,11 @@ class TestRoundDatetime(unittest.TestCase):
         """
         Rounding to a relativedelta.
         """
-        eastern = timezone('US/Eastern')
+        eastern = timezone("US/Eastern")
         test = {
-            'dt': eastern.localize(datetime(2013, 6, 15)),
-            'interval': relativedelta(years=1),
-            'floor': True,
+            "dt": eastern.localize(datetime(2013, 6, 15)),
+            "interval": relativedelta(years=1),
+            "floor": True,
         }
         expected = eastern.localize(datetime(2013, 1, 1))
 
@@ -299,11 +289,11 @@ class TestRoundDatetime(unittest.TestCase):
         """
         Ensure ceiling with relativedelta doesn't change a rounded datetime.
         """
-        eastern = timezone('US/Eastern')
+        eastern = timezone("US/Eastern")
         test = {
-            'dt': eastern.localize(datetime(2013, 1, 1)),
-            'interval': relativedelta(years=1),
-            'ceil': True,
+            "dt": eastern.localize(datetime(2013, 1, 1)),
+            "interval": relativedelta(years=1),
+            "ceil": True,
         }
         expected = eastern.localize(datetime(2013, 1, 1))
 
@@ -318,11 +308,11 @@ class TestRoundDatetime(unittest.TestCase):
         Due to how we are performing rounding for relativedelta's
         dates before the UNIX epoch are handled slightly differently.
         """
-        eastern = timezone('US/Eastern')
+        eastern = timezone("US/Eastern")
         test = {
-            'dt': eastern.localize(datetime(1960, 6, 15)),
-            'interval': relativedelta(years=1),
-            'floor': True,
+            "dt": eastern.localize(datetime(1960, 6, 15)),
+            "interval": relativedelta(years=1),
+            "floor": True,
         }
         expected = eastern.localize(datetime(1960, 1, 1))
 
@@ -334,11 +324,11 @@ class TestRoundDatetime(unittest.TestCase):
         """
         Relativedelta rounding over a daylight saving time transition.
         """
-        eastern = timezone('US/Eastern')
+        eastern = timezone("US/Eastern")
         test = {
-            'dt': eastern.localize(datetime(2014, 4, 1)),
-            'interval': relativedelta(months=1),
-            'floor': True,
+            "dt": eastern.localize(datetime(2014, 4, 1)),
+            "interval": relativedelta(months=1),
+            "floor": True,
         }
         expected = eastern.localize(datetime(2014, 4, 1))
 
@@ -353,11 +343,7 @@ class TestRoundDatetime(unittest.TestCase):
         # Note: Mispelled keywords in relativedelta calls are effectively
         # zero. ie. relativedelta(month=0) == relativedelta(0)
 
-        test = {
-            'dt': datetime(2000, 6, 1),
-            'interval': relativedelta(0),
-            'floor': True,
-        }
+        test = {"dt": datetime(2000, 6, 1), "interval": relativedelta(0), "floor": True}
         expected = datetime(2000, 6, 1)
 
         result = round_datetime(**test)
@@ -395,12 +381,8 @@ class TestLocalizePeriod(unittest.TestCase):
             localize_period_ending(dt1, wpg, timedelta(hours=1))
 
         for i in range(2, 10):
-            self.assertIsNotNone(
-                localize_period_ending(dt0, wpg, timedelta(hours=i))
-            )
-            self.assertIsNotNone(
-                localize_period_ending(dt1, wpg, timedelta(hours=i))
-            )
+            self.assertIsNotNone(localize_period_ending(dt0, wpg, timedelta(hours=i)))
+            self.assertIsNotNone(localize_period_ending(dt1, wpg, timedelta(hours=i)))
 
     def test_localize_hour_ending(self):
         dt0 = datetime(2015, 3, 8, 2)  # Non-existent time in America/Winnipeg
@@ -470,21 +452,23 @@ class TestEstimate(unittest.TestCase):
 
         for i in range(len(dates)):
             release_date = estimate_latest_release(
-                dates[i], publish_interval, publish_offset,
+                dates[i], publish_interval, publish_offset
             )
             self.assertEqual(release_date, expected[i][0])
 
             content_end = estimate_content_end(
-                release_date, content_interval, content_offset,
+                release_date, content_interval, content_offset
             )
             self.assertEqual(content_end, expected[i][1])
 
-            release_date2, content_end2 = estimate_latest(dates[i], (
-                publish_interval, publish_offset, content_interval, content_offset
-            ))
+            release_date2, content_end2 = estimate_latest(
+                dates[i],
+                (publish_interval, publish_offset, content_interval, content_offset),
+            )
 
             self.assertEqual(release_date, release_date2)
             self.assertEqual(content_end, content_end2)
+
 
 class TestDateTimeSplit(unittest.TestCase):
     def test_datetime_split(self):
@@ -504,16 +488,19 @@ class TestDateTimeSplit(unittest.TestCase):
         r2 = DatetimeRange(d1, d2)
 
         expected = (
-            [DatetimeRange(d0, pivot, bounds=(Bound.INCLUSIVE, Bound.EXCLUSIVE)),
-             DatetimeRange(d0, d1),
-             DatetimeRange(d1, pivot, bounds=(Bound.INCLUSIVE, Bound.EXCLUSIVE)),
-             d3],
+            [
+                DatetimeRange(d0, pivot, bounds=(Bound.INCLUSIVE, Bound.EXCLUSIVE)),
+                DatetimeRange(d0, d1),
+                DatetimeRange(d1, pivot, bounds=(Bound.INCLUSIVE, Bound.EXCLUSIVE)),
+                d3,
+            ],
             [DatetimeRange(pivot, d2), DatetimeRange(pivot, d2), d4],
         )
 
         actual = split([r0, r1, r2, d3, d4], pivot)
 
         self.assertEqual(actual, expected)
+
 
 class TestDateTimeContains(unittest.TestCase):
     def test_contains(self):
@@ -536,10 +523,10 @@ class TestDateTimeContains(unittest.TestCase):
 
 class TestTimezoneParser(unittest.TestCase):
     def test_timezone_parse(self):
-        self.assertEqual(timezone_util('utc', None), utc)
+        self.assertEqual(timezone_util("utc", None), utc)
         self.assertEqual(timezone_util(None, 0), utc)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()

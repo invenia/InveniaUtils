@@ -6,7 +6,7 @@ from pdfminer.pdfpage import PDFPage
 from typing import BinaryIO
 
 
-class PDFMinerTextExtractionFileWrapper():
+class PDFMinerTextExtractionFileWrapper:
     def __init__(self, contents: BinaryIO):
         self._resource_manager = PDFResourceManager()
         self._pages = list(PDFPage.get_pages(contents))
@@ -28,7 +28,7 @@ class PDFMinerTextExtractionFileWrapper():
             if not isinstance(page_index, int):
                 raise ValueError("page_index must be an integer.")
 
-            pages = self._pages[page_index:page_index + 1]
+            pages = self._pages[page_index : page_index + 1]
         else:
             pages = self._pages
 

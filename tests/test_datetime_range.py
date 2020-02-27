@@ -7,8 +7,13 @@ from datetime import datetime, timedelta
 
 from inveniautils.dates import localize
 from inveniautils.datetime_range import (
-    Bound, DatetimeRange, POS_INF_DATETIME, start_before_key, period_ending_as_range,
-    period_beginning_as_range, cmp_ranges,
+    Bound,
+    DatetimeRange,
+    POS_INF_DATETIME,
+    start_before_key,
+    period_ending_as_range,
+    period_beginning_as_range,
+    cmp_ranges,
 )
 
 from dateutil.parser import parse as datetime_parser
@@ -27,21 +32,18 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Creation of datetime range without timezones.
         """
-        test = {
-            'start': datetime.now() - timedelta(days=3),
-            'end': datetime.now(),
-        }
+        test = {"start": datetime.now() - timedelta(days=3), "end": datetime.now()}
         expected = [
-            test['start'] + timedelta(days=0),
-            test['start'] + timedelta(days=1),
-            test['start'] + timedelta(days=2),
-            test['start'] + timedelta(days=3),
+            test["start"] + timedelta(days=0),
+            test["start"] + timedelta(days=1),
+            test["start"] + timedelta(days=2),
+            test["start"] + timedelta(days=3),
         ]
 
         result = DatetimeRange(**test)
 
-        self.assertEqual(result.start, test['start'])
-        self.assertEqual(result.end, test['end'])
+        self.assertEqual(result.start, test["start"])
+        self.assertEqual(result.end, test["end"])
         self.assertEqual(result.tz_aware, False)
         self.assertEqual(result, result)
         self.assertEqual(list(result.dates(timedelta(days=1))), expected)
@@ -51,8 +53,8 @@ class TestDatetimeRange(unittest.TestCase):
         Creation of datetime range with timezones.
         """
         test = {
-            'start': datetime(2013, 1, 1, tzinfo=utc),
-            'end': datetime(2013, 1, 1, tzinfo=tzoffset('EST', -18000)),
+            "start": datetime(2013, 1, 1, tzinfo=utc),
+            "end": datetime(2013, 1, 1, tzinfo=tzoffset("EST", -18000)),
         }
         expected = [
             datetime(2013, 1, 1, 0, tzinfo=utc),
@@ -65,8 +67,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         result = DatetimeRange(**test)
 
-        self.assertEqual(result.start, test['start'])
-        self.assertEqual(result.end, test['end'])
+        self.assertEqual(result.start, test["start"])
+        self.assertEqual(result.end, test["end"])
         self.assertEqual(result.tz_aware, True)
         self.assertEqual(list(result.dates(timedelta(hours=1))), expected)
 
@@ -75,8 +77,7 @@ class TestDatetimeRange(unittest.TestCase):
         Datetime range assignment of start field.
         """
         dtr = DatetimeRange(
-            start=datetime.now() - timedelta(days=3),
-            end=datetime.now(),
+            start=datetime.now() - timedelta(days=3), end=datetime.now()
         )
         start_new = datetime.now() - timedelta(days=2)
 
@@ -88,8 +89,7 @@ class TestDatetimeRange(unittest.TestCase):
         Datetime range assignment of end field.
         """
         dtr = DatetimeRange(
-            start=datetime.now() - timedelta(days=3),
-            end=datetime.now(),
+            start=datetime.now() - timedelta(days=3), end=datetime.now()
         )
         end_new = datetime.now() + timedelta(days=1)
 
@@ -100,10 +100,7 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Datetime range where start == end.
         """
-        dtr = DatetimeRange(
-            start=datetime(2013, 1, 1),
-            end=datetime(2013, 1, 1),
-        )
+        dtr = DatetimeRange(start=datetime(2013, 1, 1), end=datetime(2013, 1, 1))
         expected = datetime(2013, 1, 1)
 
         self.assertEqual(list(dtr.dates(timedelta(days=1))), [expected])
@@ -125,10 +122,7 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Datetime range where start > end.
         """
-        test = {
-            'start': datetime(2013, 1, 2),
-            'end': datetime(2013, 1, 1),
-        }
+        test = {"start": datetime(2013, 1, 2), "end": datetime(2013, 1, 1)}
 
         # TODO: Check error message?
         with self.assertRaises(ValueError):
@@ -177,11 +171,8 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Creation of datetime range from a string.
         """
-        test = '2012 to 2013'
-        expected = DatetimeRange(
-            start=datetime(2012, 1, 1),
-            end=datetime(2013, 1, 1),
-        )
+        test = "2012 to 2013"
+        expected = DatetimeRange(start=datetime(2012, 1, 1), end=datetime(2013, 1, 1))
 
         result = DatetimeRange.fromstring(test)
 
@@ -196,7 +187,7 @@ class TestDatetimeRange(unittest.TestCase):
         """
         dtr = DatetimeRange(
             start=datetime(2013, 1, 1, tzinfo=utc),
-            end=datetime(2013, 1, 1, tzinfo=tzoffset('EST', -18000)),
+            end=datetime(2013, 1, 1, tzinfo=tzoffset("EST", -18000)),
         )
 
         expected_aware = DatetimeRange(dtr.start, dtr.end)
@@ -212,14 +203,14 @@ class TestDatetimeRange(unittest.TestCase):
             datetime(2013, 1, 1, 4, tzinfo=utc),
             datetime(2013, 1, 1, 5, tzinfo=utc),
         ]
-        expected_naive_dates = [
-            dt.replace(tzinfo=None) for dt in expected_aware_dates
-        ]
+        expected_naive_dates = [dt.replace(tzinfo=None) for dt in expected_aware_dates]
 
         self.assertEqual(dtr.tz_aware, True)
         self.assertEqual(dtr.start, expected_aware.start)
         self.assertEqual(dtr.end, expected_aware.end)
-        self.assertEqual(list(dtr.dates(timedelta(hours=1))), expected_aware_dates)  # noqa: E501
+        self.assertEqual(
+            list(dtr.dates(timedelta(hours=1))), expected_aware_dates
+        )  # noqa: E501
         self.assertEqual(dtr, expected_aware)
 
         dtr.tz_aware = False
@@ -227,7 +218,9 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertEqual(dtr.tz_aware, False)
         self.assertEqual(dtr.start, expected_naive.start)
         self.assertEqual(dtr.end, expected_naive.end)
-        self.assertEqual(list(dtr.dates(timedelta(hours=1))), expected_naive_dates)  # noqa: E501
+        self.assertEqual(
+            list(dtr.dates(timedelta(hours=1))), expected_naive_dates
+        )  # noqa: E501
         self.assertEqual(dtr, expected_naive)
 
     def test_astimezone(self):
@@ -236,13 +229,10 @@ class TestDatetimeRange(unittest.TestCase):
         """
         dtr_aware = DatetimeRange(
             start=datetime(2013, 1, 1, tzinfo=utc),
-            end=datetime(2013, 1, 1, tzinfo=tzoffset('EST', -18000)),
+            end=datetime(2013, 1, 1, tzinfo=tzoffset("EST", -18000)),
         )
         dtr_utc = dtr_aware.astimezone(utc)
-        dtr_naive = DatetimeRange(
-            start=datetime(2013, 1, 1),
-            end=datetime(2013, 1, 1),
-        )
+        dtr_naive = DatetimeRange(start=datetime(2013, 1, 1), end=datetime(2013, 1, 1))
 
         expected_utc = DatetimeRange(
             start=datetime(2013, 1, 1, 0, tzinfo=utc),
@@ -259,10 +249,7 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertEqual(dtr_aware, dtr_utc)
         self.assertEqual(dtr_utc, expected_utc)
-        self.assertEqual(
-            list(dtr_utc.dates(timedelta(hours=1))),
-            expected_aware_dates,
-        )
+        self.assertEqual(list(dtr_utc.dates(timedelta(hours=1))), expected_aware_dates)
 
         with self.assertRaises(ValueError):
             dtr_naive.astimezone(utc)
@@ -272,16 +259,13 @@ class TestDatetimeRange(unittest.TestCase):
         Datetime range into datetimes using timezones.
         """
         dtr_aware = DatetimeRange(
-            start=datetime(2012, 12, 31, 19, tzinfo=tzoffset('EST', -18000)),
-            end=datetime(2013, 1, 1, 0, tzinfo=tzoffset('EST', -18000)),
+            start=datetime(2012, 12, 31, 19, tzinfo=tzoffset("EST", -18000)),
+            end=datetime(2013, 1, 1, 0, tzinfo=tzoffset("EST", -18000)),
         )
-        dtr_naive = DatetimeRange(
-            start=datetime(2013, 1, 1),
-            end=datetime(2013, 1, 1),
-        )
+        dtr_naive = DatetimeRange(start=datetime(2013, 1, 1), end=datetime(2013, 1, 1))
         expected_aware = DatetimeRange(
-            start=datetime(2012, 12, 31, 19, tzinfo=tzoffset('EST', -18000)),
-            end=datetime(2013, 1, 1, 0, tzinfo=tzoffset('EST', -18000)),
+            start=datetime(2012, 12, 31, 19, tzinfo=tzoffset("EST", -18000)),
+            end=datetime(2013, 1, 1, 0, tzinfo=tzoffset("EST", -18000)),
         )
         expected_aware_dates = [
             datetime(2013, 1, 1, 0, tzinfo=utc),
@@ -294,8 +278,7 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertEqual(dtr_aware, expected_aware)
         self.assertEqual(
-            list(dtr_aware.dates(timedelta(hours=1), tz=utc)),
-            expected_aware_dates,
+            list(dtr_aware.dates(timedelta(hours=1), tz=utc)), expected_aware_dates
         )
 
         with self.assertRaises(ValueError):
@@ -308,21 +291,21 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_dateutil_dst_spring_hourly.
         """
-        eastern = pytz.timezone('US/Eastern')
+        eastern = pytz.timezone("US/Eastern")
         test = {
-            'start': localize(datetime(2013, 3, 10, 0), eastern),
-            'end': localize(datetime(2013, 3, 10, 4), eastern),
+            "start": localize(datetime(2013, 3, 10, 0), eastern),
+            "end": localize(datetime(2013, 3, 10, 4), eastern),
         }
         expected = {
-            'start': localize(datetime(2013, 3, 10, 0), eastern),
-            'end': localize(datetime(2013, 3, 10, 4), eastern),
-            'dates': [
+            "start": localize(datetime(2013, 3, 10, 0), eastern),
+            "end": localize(datetime(2013, 3, 10, 4), eastern),
+            "dates": [
                 localize(datetime(2013, 3, 10, 0), eastern),
                 localize(datetime(2013, 3, 10, 1), eastern),
                 localize(datetime(2013, 3, 10, 3), eastern),
                 localize(datetime(2013, 3, 10, 4), eastern),
             ],
-            'ranges': [
+            "ranges": [
                 DatetimeRange(
                     localize(datetime(2013, 3, 10, 0), eastern),
                     localize(datetime(2013, 3, 10, 1), eastern),
@@ -345,17 +328,17 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(hours=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
-        self.assertEqual(dtr.start, expected['start'])
-        self.assertEqual(dtr.end, expected['end'])
+        self.assertEqual(dtr.start, expected["start"])
+        self.assertEqual(dtr.end, expected["end"])
 
     # Fails due to 2013/3/10 02:00 being a created.
     @unittest.expectedFailure
@@ -366,21 +349,21 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_pytz_dst_spring_hourly.
         """
-        eastern = dateutil.tz.gettz('US/Eastern')
+        eastern = dateutil.tz.gettz("US/Eastern")
         test = {
-            'start': localize(datetime(2013, 3, 10, 0), eastern),
-            'end': localize(datetime(2013, 3, 10, 4), eastern),
+            "start": localize(datetime(2013, 3, 10, 0), eastern),
+            "end": localize(datetime(2013, 3, 10, 4), eastern),
         }
         expected = {
-            'start': localize(datetime(2013, 3, 10, 0), eastern),
-            'end': localize(datetime(2013, 3, 10, 4), eastern),
-            'dates': [
+            "start": localize(datetime(2013, 3, 10, 0), eastern),
+            "end": localize(datetime(2013, 3, 10, 4), eastern),
+            "dates": [
                 localize(datetime(2013, 3, 10, 0), eastern),
                 localize(datetime(2013, 3, 10, 1), eastern),
                 localize(datetime(2013, 3, 10, 3), eastern),
                 localize(datetime(2013, 3, 10, 4), eastern),
             ],
-            'ranges': [
+            "ranges": [
                 DatetimeRange(
                     localize(datetime(2013, 3, 10, 0), eastern),
                     localize(datetime(2013, 3, 10, 1), eastern),
@@ -403,17 +386,17 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(hours=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
-        self.assertEqual(dtr.start, expected['start'])
-        self.assertEqual(dtr.end, expected['end'])
+        self.assertEqual(dtr.start, expected["start"])
+        self.assertEqual(dtr.end, expected["end"])
 
     def test_dates_pytz_dst_fall_hourly(self):
         """
@@ -422,15 +405,15 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_dateutil_dst_fall_hourly.
         """
-        eastern = pytz.timezone('US/Eastern')
+        eastern = pytz.timezone("US/Eastern")
         test = {
-            'start': localize(datetime(2013, 11, 3, 0), eastern),
-            'end': localize(datetime(2013, 11, 3, 4), eastern),
+            "start": localize(datetime(2013, 11, 3, 0), eastern),
+            "end": localize(datetime(2013, 11, 3, 4), eastern),
         }
         expected = {
-            'start': localize(datetime(2013, 11, 3, 0), eastern),
-            'end': localize(datetime(2013, 11, 3, 4), eastern),
-            'dates': [
+            "start": localize(datetime(2013, 11, 3, 0), eastern),
+            "end": localize(datetime(2013, 11, 3, 4), eastern),
+            "dates": [
                 localize(datetime(2013, 11, 3, 0), eastern, is_dst=None),
                 localize(datetime(2013, 11, 3, 1), eastern, is_dst=True),
                 localize(datetime(2013, 11, 3, 1), eastern, is_dst=False),
@@ -438,7 +421,7 @@ class TestDatetimeRange(unittest.TestCase):
                 localize(datetime(2013, 11, 3, 3), eastern, is_dst=None),
                 localize(datetime(2013, 11, 3, 4), eastern, is_dst=None),
             ],
-            'ranges': [
+            "ranges": [
                 DatetimeRange(
                     localize(datetime(2013, 11, 3, 0), eastern, is_dst=None),
                     localize(datetime(2013, 11, 3, 1), eastern, is_dst=True),
@@ -471,17 +454,17 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(hours=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
-        self.assertEqual(dtr.start, expected['start'])
-        self.assertEqual(dtr.end, expected['end'])
+        self.assertEqual(dtr.start, expected["start"])
+        self.assertEqual(dtr.end, expected["end"])
 
     # Unable differentiate ambigious hours with dateutil.
     @unittest.expectedFailure
@@ -492,46 +475,46 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_pytz_dst_fall_hourly.
         """
-        eastern = dateutil.tz.gettz('US/Eastern')
+        eastern = dateutil.tz.gettz("US/Eastern")
         test = {
-            'start': localize(datetime(2013, 11, 3, 0), eastern),
-            'end': localize(datetime(2013, 11, 3, 4), eastern),
+            "start": localize(datetime(2013, 11, 3, 0), eastern),
+            "end": localize(datetime(2013, 11, 3, 4), eastern),
         }
         expected = {
-            'start': localize(datetime(2013, 11, 3, 0), eastern),
-            'end': localize(datetime(2013, 11, 3, 4), eastern),
-            'dates': [
-                datetime_parser('2013-11-03 00:00:00-04:00'),
-                datetime_parser('2013-11-03 01:00:00-04:00'),
-                datetime_parser('2013-11-03 01:00:00-05:00'),
-                datetime_parser('2013-11-03 02:00:00-05:00'),
-                datetime_parser('2013-11-03 03:00:00-05:00'),
-                datetime_parser('2013-11-03 04:00:00-05:00'),
+            "start": localize(datetime(2013, 11, 3, 0), eastern),
+            "end": localize(datetime(2013, 11, 3, 4), eastern),
+            "dates": [
+                datetime_parser("2013-11-03 00:00:00-04:00"),
+                datetime_parser("2013-11-03 01:00:00-04:00"),
+                datetime_parser("2013-11-03 01:00:00-05:00"),
+                datetime_parser("2013-11-03 02:00:00-05:00"),
+                datetime_parser("2013-11-03 03:00:00-05:00"),
+                datetime_parser("2013-11-03 04:00:00-05:00"),
             ],
-            'ranges': [
+            "ranges": [
                 DatetimeRange(
-                    datetime_parser('2013-11-03 00:00:00-04:00'),
-                    datetime_parser('2013-11-03 01:00:00-04:00'),
+                    datetime_parser("2013-11-03 00:00:00-04:00"),
+                    datetime_parser("2013-11-03 01:00:00-04:00"),
                     range_bounds,
                 ),
                 DatetimeRange(
-                    datetime_parser('2013-11-03 01:00:00-04:00'),
-                    datetime_parser('2013-11-03 01:00:00-05:00'),
+                    datetime_parser("2013-11-03 01:00:00-04:00"),
+                    datetime_parser("2013-11-03 01:00:00-05:00"),
                     range_bounds,
                 ),
                 DatetimeRange(
-                    datetime_parser('2013-11-03 01:00:00-05:00'),
-                    datetime_parser('2013-11-03 02:00:00-05:00'),
+                    datetime_parser("2013-11-03 01:00:00-05:00"),
+                    datetime_parser("2013-11-03 02:00:00-05:00"),
                     range_bounds,
                 ),
                 DatetimeRange(
-                    datetime_parser('2013-11-03 02:00:00-05:00'),
-                    datetime_parser('2013-11-03 03:00:00-05:00'),
+                    datetime_parser("2013-11-03 02:00:00-05:00"),
+                    datetime_parser("2013-11-03 03:00:00-05:00"),
                     range_bounds,
                 ),
                 DatetimeRange(
-                    datetime_parser('2013-11-03 03:00:00-05:00'),
-                    datetime_parser('2013-11-03 04:00:00-05:00'),
+                    datetime_parser("2013-11-03 03:00:00-05:00"),
+                    datetime_parser("2013-11-03 04:00:00-05:00"),
                     range_bounds,
                 ),
             ],
@@ -541,17 +524,17 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(hours=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
-        self.assertEqual(dtr.start, expected['start'])
-        self.assertEqual(dtr.end, expected['end'])
+        self.assertEqual(dtr.start, expected["start"])
+        self.assertEqual(dtr.end, expected["end"])
 
     def test_dates_pytz_dst_spring_daily(self):
         """
@@ -563,26 +546,26 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_dateutil_dst_spring_daily.
         """
-        eastern = pytz.timezone('US/Eastern')
+        eastern = pytz.timezone("US/Eastern")
         test = {
-            'start': localize(datetime(2013, 3, 9, 2), eastern),
-            'end': localize(datetime(2013, 3, 11, 2), eastern),
+            "start": localize(datetime(2013, 3, 9, 2), eastern),
+            "end": localize(datetime(2013, 3, 11, 2), eastern),
         }
         expected = {
-            'dates': [
-                datetime_parser('2013-03-09 02:00:00-05:00'),
-                datetime_parser('2013-03-10 02:00:00-05:00'),
-                datetime_parser('2013-03-11 02:00:00-04:00'),
+            "dates": [
+                datetime_parser("2013-03-09 02:00:00-05:00"),
+                datetime_parser("2013-03-10 02:00:00-05:00"),
+                datetime_parser("2013-03-11 02:00:00-04:00"),
             ],
-            'ranges': [
+            "ranges": [
                 DatetimeRange(
-                    datetime_parser('2013-03-09 02:00:00-05:00'),
-                    datetime_parser('2013-03-10 02:00:00-05:00'),
+                    datetime_parser("2013-03-09 02:00:00-05:00"),
+                    datetime_parser("2013-03-10 02:00:00-05:00"),
                     range_bounds,
                 ),
                 DatetimeRange(
-                    datetime_parser('2013-03-10 02:00:00-05:00'),
-                    datetime_parser('2013-03-11 02:00:00-04:00'),
+                    datetime_parser("2013-03-10 02:00:00-05:00"),
+                    datetime_parser("2013-03-11 02:00:00-04:00"),
                     range_bounds,
                 ),
             ],
@@ -592,17 +575,17 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(days=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
-        self.assertEqual(dtr.start, test['start'])
-        self.assertEqual(dtr.end, test['end'])
+        self.assertEqual(dtr.start, test["start"])
+        self.assertEqual(dtr.end, test["end"])
 
     def test_dates_dateutil_dst_spring_daily(self):
         """
@@ -614,26 +597,26 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_pytz_dst_spring_daily.
         """
-        eastern = dateutil.tz.gettz('US/Eastern')
+        eastern = dateutil.tz.gettz("US/Eastern")
         test = {
-            'start': localize(datetime(2013, 3, 9, 2), eastern),
-            'end': localize(datetime(2013, 3, 11, 2), eastern),
+            "start": localize(datetime(2013, 3, 9, 2), eastern),
+            "end": localize(datetime(2013, 3, 11, 2), eastern),
         }
         expected = {
-            'dates': [
-                datetime_parser('2013-03-09 02:00:00-05:00'),
-                datetime_parser('2013-03-10 02:00:00-04:00'),
-                datetime_parser('2013-03-11 02:00:00-04:00'),
+            "dates": [
+                datetime_parser("2013-03-09 02:00:00-05:00"),
+                datetime_parser("2013-03-10 02:00:00-04:00"),
+                datetime_parser("2013-03-11 02:00:00-04:00"),
             ],
-            'ranges': [
+            "ranges": [
                 DatetimeRange(
-                    datetime_parser('2013-03-09 02:00:00-05:00'),
-                    datetime_parser('2013-03-10 02:00:00-04:00'),
+                    datetime_parser("2013-03-09 02:00:00-05:00"),
+                    datetime_parser("2013-03-10 02:00:00-04:00"),
                     range_bounds,
                 ),
                 DatetimeRange(
-                    datetime_parser('2013-03-10 02:00:00-04:00'),
-                    datetime_parser('2013-03-11 02:00:00-04:00'),
+                    datetime_parser("2013-03-10 02:00:00-04:00"),
+                    datetime_parser("2013-03-11 02:00:00-04:00"),
                     range_bounds,
                 ),
             ],
@@ -643,17 +626,17 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(days=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
-        self.assertEqual(dtr.start, test['start'])
-        self.assertEqual(dtr.end, test['end'])
+        self.assertEqual(dtr.start, test["start"])
+        self.assertEqual(dtr.end, test["end"])
 
     def test_dates_pytz_dst_fall_daily(self):
         """
@@ -665,26 +648,26 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_dateutil_dst_fall_daily.
         """
-        eastern = pytz.timezone('US/Eastern')
+        eastern = pytz.timezone("US/Eastern")
         test = {
-            'start': localize(datetime(2013, 11, 2, 1), eastern),
-            'end': localize(datetime(2013, 11, 4, 1), eastern),
+            "start": localize(datetime(2013, 11, 2, 1), eastern),
+            "end": localize(datetime(2013, 11, 4, 1), eastern),
         }
         expected = {
-            'dates': [
-                datetime_parser('2013-11-02 01:00:00-04:00'),
-                datetime_parser('2013-11-03 01:00:00-05:00'),
-                datetime_parser('2013-11-04 01:00:00-05:00'),
+            "dates": [
+                datetime_parser("2013-11-02 01:00:00-04:00"),
+                datetime_parser("2013-11-03 01:00:00-05:00"),
+                datetime_parser("2013-11-04 01:00:00-05:00"),
             ],
-            'ranges': [
+            "ranges": [
                 DatetimeRange(
-                    datetime_parser('2013-11-02 01:00:00-04:00'),
-                    datetime_parser('2013-11-03 01:00:00-05:00'),
+                    datetime_parser("2013-11-02 01:00:00-04:00"),
+                    datetime_parser("2013-11-03 01:00:00-05:00"),
                     range_bounds,
                 ),
                 DatetimeRange(
-                    datetime_parser('2013-11-03 01:00:00-05:00'),
-                    datetime_parser('2013-11-04 01:00:00-05:00'),
+                    datetime_parser("2013-11-03 01:00:00-05:00"),
+                    datetime_parser("2013-11-04 01:00:00-05:00"),
                     range_bounds,
                 ),
             ],
@@ -694,17 +677,17 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(days=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
-        self.assertEqual(dtr.start, test['start'])
-        self.assertEqual(dtr.end, test['end'])
+        self.assertEqual(dtr.start, test["start"])
+        self.assertEqual(dtr.end, test["end"])
 
     @unittest.expectedFailure
     def test_dates_dateutil_dst_fall_daily(self):
@@ -717,29 +700,31 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_pytz_dst_fall_daily.
         """
-        eastern = dateutil.tz.gettz('US/Eastern')
+        eastern = dateutil.tz.gettz("US/Eastern")
         test = {
-            'start': localize(datetime(2013, 11, 2, 1), eastern),
-            'end': localize(datetime(2013, 11, 4, 1), eastern),
+            "start": localize(datetime(2013, 11, 2, 1), eastern),
+            "end": localize(datetime(2013, 11, 4, 1), eastern),
         }
         expected = {
-            'dates': [
-                dt.astimezone(eastern) for dt in [
-                    datetime_parser('2013-11-02 01:00:00-04:00'),
-                    datetime_parser('2013-11-03 01:00:00-05:00'),
-                    datetime_parser('2013-11-04 01:00:00-05:00'),
+            "dates": [
+                dt.astimezone(eastern)
+                for dt in [
+                    datetime_parser("2013-11-02 01:00:00-04:00"),
+                    datetime_parser("2013-11-03 01:00:00-05:00"),
+                    datetime_parser("2013-11-04 01:00:00-05:00"),
                 ]
             ],
-            'ranges': [
-                dtr.astimezone(eastern) for dtr in [
+            "ranges": [
+                dtr.astimezone(eastern)
+                for dtr in [
                     DatetimeRange(
-                        datetime_parser('2013-11-02 01:00:00-04:00'),
-                        datetime_parser('2013-11-03 01:00:00-05:00'),
+                        datetime_parser("2013-11-02 01:00:00-04:00"),
+                        datetime_parser("2013-11-03 01:00:00-05:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:00:00-05:00'),
-                        datetime_parser('2013-11-04 01:00:00-05:00'),
+                        datetime_parser("2013-11-03 01:00:00-05:00"),
+                        datetime_parser("2013-11-04 01:00:00-05:00"),
                         range_bounds,
                     ),
                 ]
@@ -750,17 +735,17 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(days=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
-        self.assertEqual(dtr.start, test['start'])
-        self.assertEqual(dtr.end, test['end'])
+        self.assertEqual(dtr.start, test["start"])
+        self.assertEqual(dtr.end, test["end"])
 
     def test_dates_pytz_dst_fall_edge_cases(self):
         """
@@ -772,31 +757,33 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_dateutil_dst_fall_edge_cases.
         """
-        eastern = pytz.timezone('US/Eastern')
+        eastern = pytz.timezone("US/Eastern")
 
         # 2 hour interval
         test = {
-            'start': localize(datetime(2013, 11, 2, 23), eastern),
-            'end': localize(datetime(2013, 11, 3, 4), eastern),
+            "start": localize(datetime(2013, 11, 2, 23), eastern),
+            "end": localize(datetime(2013, 11, 3, 4), eastern),
         }
         expected = {
-            'dates': [
-                dt.astimezone(eastern) for dt in [
-                    datetime_parser('2013-11-02 23:00:00-04:00'),
-                    datetime_parser('2013-11-03 01:00:00-05:00'),
-                    datetime_parser('2013-11-03 03:00:00-05:00'),
+            "dates": [
+                dt.astimezone(eastern)
+                for dt in [
+                    datetime_parser("2013-11-02 23:00:00-04:00"),
+                    datetime_parser("2013-11-03 01:00:00-05:00"),
+                    datetime_parser("2013-11-03 03:00:00-05:00"),
                 ]
             ],
-            'ranges': [
-                r.astimezone(eastern) for r in [
+            "ranges": [
+                r.astimezone(eastern)
+                for r in [
                     DatetimeRange(
-                        datetime_parser('2013-11-02 23:00:00-04:00'),
-                        datetime_parser('2013-11-03 01:00:00-05:00'),
+                        datetime_parser("2013-11-02 23:00:00-04:00"),
+                        datetime_parser("2013-11-03 01:00:00-05:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:00:00-05:00'),
-                        datetime_parser('2013-11-03 03:00:00-05:00'),
+                        datetime_parser("2013-11-03 01:00:00-05:00"),
+                        datetime_parser("2013-11-03 03:00:00-05:00"),
                         range_bounds,
                     ),
                 ]
@@ -807,50 +794,52 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(hours=2)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
         # 59 minute interval
         test = {
-            'start': localize(datetime(2013, 11, 3), eastern),
-            'end': localize(datetime(2013, 11, 3, 3), eastern),
+            "start": localize(datetime(2013, 11, 3), eastern),
+            "end": localize(datetime(2013, 11, 3, 3), eastern),
         }
         expected = {
-            'dates': [
-                dt.astimezone(eastern) for dt in [
-                    datetime_parser('2013-11-03 00:00:00-04:00'),
-                    datetime_parser('2013-11-03 00:59:00-04:00'),
-                    datetime_parser('2013-11-03 01:58:00-04:00'),
-                    datetime_parser('2013-11-03 01:57:00-05:00'),
-                    datetime_parser('2013-11-03 02:56:00-05:00'),
+            "dates": [
+                dt.astimezone(eastern)
+                for dt in [
+                    datetime_parser("2013-11-03 00:00:00-04:00"),
+                    datetime_parser("2013-11-03 00:59:00-04:00"),
+                    datetime_parser("2013-11-03 01:58:00-04:00"),
+                    datetime_parser("2013-11-03 01:57:00-05:00"),
+                    datetime_parser("2013-11-03 02:56:00-05:00"),
                 ]
             ],
-            'ranges': [
-                r.astimezone(eastern) for r in [
+            "ranges": [
+                r.astimezone(eastern)
+                for r in [
                     DatetimeRange(
-                        datetime_parser('2013-11-03 00:00:00-04:00'),
-                        datetime_parser('2013-11-03 00:59:00-04:00'),
+                        datetime_parser("2013-11-03 00:00:00-04:00"),
+                        datetime_parser("2013-11-03 00:59:00-04:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 00:59:00-04:00'),
-                        datetime_parser('2013-11-03 01:58:00-04:00'),
+                        datetime_parser("2013-11-03 00:59:00-04:00"),
+                        datetime_parser("2013-11-03 01:58:00-04:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:58:00-04:00'),
-                        datetime_parser('2013-11-03 01:57:00-05:00'),
+                        datetime_parser("2013-11-03 01:58:00-04:00"),
+                        datetime_parser("2013-11-03 01:57:00-05:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:57:00-05:00'),
-                        datetime_parser('2013-11-03 02:56:00-05:00'),
+                        datetime_parser("2013-11-03 01:57:00-05:00"),
+                        datetime_parser("2013-11-03 02:56:00-05:00"),
                         range_bounds,
                     ),
                 ]
@@ -861,44 +850,46 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(minutes=59)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
         # 1 hour and 1 minute interval
         test = {
-            'start': localize(datetime(2013, 11, 2, 23, 59), eastern),
-            'end': localize(datetime(2013, 11, 3, 3), eastern),
+            "start": localize(datetime(2013, 11, 2, 23, 59), eastern),
+            "end": localize(datetime(2013, 11, 3, 3), eastern),
         }
         expected = {
-            'dates': [
-                dt.astimezone(eastern) for dt in [
-                    datetime_parser('2013-11-02 23:59:00-04:00'),
-                    datetime_parser('2013-11-03 01:00:00-04:00'),
-                    datetime_parser('2013-11-03 01:01:00-05:00'),
-                    datetime_parser('2013-11-03 02:02:00-05:00'),
+            "dates": [
+                dt.astimezone(eastern)
+                for dt in [
+                    datetime_parser("2013-11-02 23:59:00-04:00"),
+                    datetime_parser("2013-11-03 01:00:00-04:00"),
+                    datetime_parser("2013-11-03 01:01:00-05:00"),
+                    datetime_parser("2013-11-03 02:02:00-05:00"),
                 ]
             ],
-            'ranges': [
-                r.astimezone(eastern) for r in [
+            "ranges": [
+                r.astimezone(eastern)
+                for r in [
                     DatetimeRange(
-                        datetime_parser('2013-11-02 23:59:00-04:00'),
-                        datetime_parser('2013-11-03 01:00:00-04:00'),
+                        datetime_parser("2013-11-02 23:59:00-04:00"),
+                        datetime_parser("2013-11-03 01:00:00-04:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:00:00-04:00'),
-                        datetime_parser('2013-11-03 01:01:00-05:00'),
+                        datetime_parser("2013-11-03 01:00:00-04:00"),
+                        datetime_parser("2013-11-03 01:01:00-05:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:01:00-05:00'),
-                        datetime_parser('2013-11-03 02:02:00-05:00'),
+                        datetime_parser("2013-11-03 01:01:00-05:00"),
+                        datetime_parser("2013-11-03 02:02:00-05:00"),
                         range_bounds,
                     ),
                 ]
@@ -909,14 +900,14 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(hours=1, minutes=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
     @unittest.expectedFailure
     def test_dates_dateutil_dst_fall_edge_cases(self):
@@ -929,31 +920,33 @@ class TestDatetimeRange(unittest.TestCase):
 
         Similar to testcase: test_dates_pytz_dst_fall_edge_cases.
         """
-        eastern = dateutil.tz.gettz('US/Eastern')
+        eastern = dateutil.tz.gettz("US/Eastern")
 
         # 2 hour interval
         test = {
-            'start': localize(datetime(2013, 11, 2, 23), eastern),
-            'end': localize(datetime(2013, 11, 3, 4), eastern),
+            "start": localize(datetime(2013, 11, 2, 23), eastern),
+            "end": localize(datetime(2013, 11, 3, 4), eastern),
         }
         expected = {
-            'dates': [
-                dt.astimezone(eastern) for dt in [
-                    datetime_parser('2013-11-02 23:00:00-04:00'),
-                    datetime_parser('2013-11-03 01:00:00-05:00'),
-                    datetime_parser('2013-11-03 03:00:00-05:00'),
+            "dates": [
+                dt.astimezone(eastern)
+                for dt in [
+                    datetime_parser("2013-11-02 23:00:00-04:00"),
+                    datetime_parser("2013-11-03 01:00:00-05:00"),
+                    datetime_parser("2013-11-03 03:00:00-05:00"),
                 ]
             ],
-            'ranges': [
-                r.astimezone(eastern) for r in [
+            "ranges": [
+                r.astimezone(eastern)
+                for r in [
                     DatetimeRange(
-                        datetime_parser('2013-11-02 23:00:00-04:00'),
-                        datetime_parser('2013-11-03 01:00:00-05:00'),
+                        datetime_parser("2013-11-02 23:00:00-04:00"),
+                        datetime_parser("2013-11-03 01:00:00-05:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:00:00-05:00'),
-                        datetime_parser('2013-11-03 03:00:00-05:00'),
+                        datetime_parser("2013-11-03 01:00:00-05:00"),
+                        datetime_parser("2013-11-03 03:00:00-05:00"),
                         range_bounds,
                     ),
                 ]
@@ -964,50 +957,52 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(hours=2)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
         # 59 minute interval
         test = {
-            'start': localize(datetime(2013, 11, 3), eastern),
-            'end': localize(datetime(2013, 11, 3, 3), eastern),
+            "start": localize(datetime(2013, 11, 3), eastern),
+            "end": localize(datetime(2013, 11, 3, 3), eastern),
         }
         expected = {
-            'dates': [
-                dt.astimezone(eastern) for dt in [
-                    datetime_parser('2013-11-03 00:00:00-04:00'),
-                    datetime_parser('2013-11-03 00:59:00-04:00'),
-                    datetime_parser('2013-11-03 01:58:00-04:00'),
-                    datetime_parser('2013-11-03 01:57:00-05:00'),
-                    datetime_parser('2013-11-03 02:56:00-05:00'),
+            "dates": [
+                dt.astimezone(eastern)
+                for dt in [
+                    datetime_parser("2013-11-03 00:00:00-04:00"),
+                    datetime_parser("2013-11-03 00:59:00-04:00"),
+                    datetime_parser("2013-11-03 01:58:00-04:00"),
+                    datetime_parser("2013-11-03 01:57:00-05:00"),
+                    datetime_parser("2013-11-03 02:56:00-05:00"),
                 ]
             ],
-            'ranges': [
-                r.astimezone(eastern) for r in [
+            "ranges": [
+                r.astimezone(eastern)
+                for r in [
                     DatetimeRange(
-                        datetime_parser('2013-11-03 00:00:00-04:00'),
-                        datetime_parser('2013-11-03 00:59:00-04:00'),
+                        datetime_parser("2013-11-03 00:00:00-04:00"),
+                        datetime_parser("2013-11-03 00:59:00-04:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 00:59:00-04:00'),
-                        datetime_parser('2013-11-03 01:58:00-04:00'),
+                        datetime_parser("2013-11-03 00:59:00-04:00"),
+                        datetime_parser("2013-11-03 01:58:00-04:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:58:00-04:00'),
-                        datetime_parser('2013-11-03 01:57:00-05:00'),
+                        datetime_parser("2013-11-03 01:58:00-04:00"),
+                        datetime_parser("2013-11-03 01:57:00-05:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:57:00-05:00'),
-                        datetime_parser('2013-11-03 02:56:00-05:00'),
+                        datetime_parser("2013-11-03 01:57:00-05:00"),
+                        datetime_parser("2013-11-03 02:56:00-05:00"),
                         range_bounds,
                     ),
                 ]
@@ -1020,42 +1015,44 @@ class TestDatetimeRange(unittest.TestCase):
         dates = list(dtr.dates(interval))
         # self.assertEqual(dates, expected['dates'])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
         # self.assertEqual(ranges, expected['ranges'])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
         # 1 hour and 1 minute interval
         test = {
-            'start': localize(datetime(2013, 11, 2, 23, 59), eastern),
-            'end': localize(datetime(2013, 11, 3, 3), eastern),
+            "start": localize(datetime(2013, 11, 2, 23, 59), eastern),
+            "end": localize(datetime(2013, 11, 3, 3), eastern),
         }
         expected = {
-            'dates': [
-                dt.astimezone(eastern) for dt in [
-                    datetime_parser('2013-11-02 23:59:00-04:00'),
-                    datetime_parser('2013-11-03 01:00:00-04:00'),
-                    datetime_parser('2013-11-03 01:01:00-05:00'),
-                    datetime_parser('2013-11-03 02:02:00-05:00'),
+            "dates": [
+                dt.astimezone(eastern)
+                for dt in [
+                    datetime_parser("2013-11-02 23:59:00-04:00"),
+                    datetime_parser("2013-11-03 01:00:00-04:00"),
+                    datetime_parser("2013-11-03 01:01:00-05:00"),
+                    datetime_parser("2013-11-03 02:02:00-05:00"),
                 ]
             ],
-            'ranges': [
-                r.astimezone(eastern) for r in [
+            "ranges": [
+                r.astimezone(eastern)
+                for r in [
                     DatetimeRange(
-                        datetime_parser('2013-11-02 23:59:00-04:00'),
-                        datetime_parser('2013-11-03 01:00:00-04:00'),
+                        datetime_parser("2013-11-02 23:59:00-04:00"),
+                        datetime_parser("2013-11-03 01:00:00-04:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:00:00-04:00'),
-                        datetime_parser('2013-11-03 01:01:00-05:00'),
+                        datetime_parser("2013-11-03 01:00:00-04:00"),
+                        datetime_parser("2013-11-03 01:01:00-05:00"),
                         range_bounds,
                     ),
                     DatetimeRange(
-                        datetime_parser('2013-11-03 01:01:00-05:00'),
-                        datetime_parser('2013-11-03 02:02:00-05:00'),
+                        datetime_parser("2013-11-03 01:01:00-05:00"),
+                        datetime_parser("2013-11-03 02:02:00-05:00"),
                         range_bounds,
                     ),
                 ]
@@ -1066,74 +1063,53 @@ class TestDatetimeRange(unittest.TestCase):
         interval = timedelta(hours=1, minutes=1)
 
         dates = list(dtr.dates(interval))
-        self.assertEqual(dates, expected['dates'])
+        self.assertEqual(dates, expected["dates"])
         for i in range(len(dates)):
-            self.assertEqual(str(dates[i]), str(expected['dates'][i]))
+            self.assertEqual(str(dates[i]), str(expected["dates"][i]))
 
         ranges = list(dtr.ranges(interval))
-        self.assertEqual(ranges, expected['ranges'])
+        self.assertEqual(ranges, expected["ranges"])
         for i in range(len(ranges)):
-            self.assertEqual(str(ranges[i]), str(expected['ranges'][i]))
+            self.assertEqual(str(ranges[i]), str(expected["ranges"][i]))
 
     def test_dates_zero_interval(self):
-        dtr = DatetimeRange(
-            start=datetime(2013, 1, 1),
-            end=datetime(2013, 1, 2),
-        )
+        dtr = DatetimeRange(start=datetime(2013, 1, 1), end=datetime(2013, 1, 2))
 
+        self.assertEqual(list(dtr.dates(timedelta(0))), [datetime(2013, 1, 1)])
         self.assertEqual(
-            list(dtr.dates(timedelta(0))),
-            [datetime(2013, 1, 1)],
-        )
-        self.assertEqual(
-            list(dtr.dates(timedelta(0), reverse=True)),
-            [datetime(2013, 1, 2)],
+            list(dtr.dates(timedelta(0), reverse=True)), [datetime(2013, 1, 2)]
         )
 
         self.assertEqual(
             list(dtr.ranges(timedelta(0))),
-            [DatetimeRange(
-                datetime(2013, 1, 1),
-                datetime(2013, 1, 1),
-                range_bounds
-            )],
+            [DatetimeRange(datetime(2013, 1, 1), datetime(2013, 1, 1), range_bounds)],
         )
         self.assertEqual(
             list(dtr.ranges(timedelta(0), reverse=True)),
-            [DatetimeRange(
-                datetime(2013, 1, 2),
-                datetime(2013, 1, 2),
-                range_bounds
-            )],
+            [DatetimeRange(datetime(2013, 1, 2), datetime(2013, 1, 2), range_bounds)],
         )
 
     def test_dates_reversed(self):
+        dtr = DatetimeRange(start=datetime(2013, 1, 1), end=datetime(2013, 1, 3))
+
+        self.assertEqual(
+            list(dtr.dates(timedelta(days=1), True)),
+            [datetime(2013, 1, 3), datetime(2013, 1, 2), datetime(2013, 1, 1)],
+        )
+
         dtr = DatetimeRange(
             start=datetime(2013, 1, 1),
             end=datetime(2013, 1, 3),
+            bounds=(Bound.INCLUSIVE, Bound.EXCLUSIVE),
         )
 
         self.assertEqual(
             list(dtr.dates(timedelta(days=1), True)),
-            [datetime(2013, 1, 3), datetime(2013, 1, 2), datetime(2013, 1, 1)]
-        )
-
-        dtr = DatetimeRange(
-            start = datetime(2013, 1, 1),
-            end = datetime(2013, 1, 3),
-            bounds = (Bound.INCLUSIVE, Bound.EXCLUSIVE)
-        )
-
-        self.assertEqual(
-            list(dtr.dates(timedelta(days=1), True)),
-            [datetime(2013, 1, 2), datetime(2013, 1, 1)]
+            [datetime(2013, 1, 2), datetime(2013, 1, 1)],
         )
 
     def test_dates_negative_interval(self):
-        dtr = DatetimeRange(
-            start=datetime(2013, 1, 1),
-            end=datetime(2013, 1, 2),
-        )
+        dtr = DatetimeRange(start=datetime(2013, 1, 1), end=datetime(2013, 1, 2))
 
         with self.assertRaises(ValueError):
             next(dtr.dates(timedelta(seconds=-1)))
@@ -1164,26 +1140,22 @@ class TestDatetimeRange(unittest.TestCase):
 
         bounds = (Bound.INCLUSIVE, Bound.INCLUSIVE)
         self.assertEqual(
-            list(dtr.ranges(period, bounds=bounds)),
-            list(output(range(1, 3), bounds)),
+            list(dtr.ranges(period, bounds=bounds)), list(output(range(1, 3), bounds))
         )
 
         bounds = (Bound.EXCLUSIVE, Bound.INCLUSIVE)
         self.assertEqual(
-            list(dtr.ranges(period, bounds=bounds)),
-            list(output(range(0, 3), bounds)),
+            list(dtr.ranges(period, bounds=bounds)), list(output(range(0, 3), bounds))
         )
 
         bounds = (Bound.INCLUSIVE, Bound.EXCLUSIVE)
         self.assertEqual(
-            list(dtr.ranges(period, bounds=bounds)),
-            list(output(range(1, 4), bounds)),
+            list(dtr.ranges(period, bounds=bounds)), list(output(range(1, 4), bounds))
         )
 
         bounds = (Bound.EXCLUSIVE, Bound.EXCLUSIVE)
         self.assertEqual(
-            list(dtr.ranges(period, bounds=bounds)),
-            list(output(range(0, 4), bounds)),
+            list(dtr.ranges(period, bounds=bounds)), list(output(range(0, 4), bounds))
         )
 
     def test_containing(self):
@@ -1198,17 +1170,16 @@ class TestDatetimeRange(unittest.TestCase):
         """
         test = [
             DatetimeRange(
-                datetime(2013, 1, 1, 2), datetime(2013, 1, 1, 3),
-                Bound.EXCLUSIVE,
+                datetime(2013, 1, 1, 2), datetime(2013, 1, 1, 3), Bound.EXCLUSIVE
             ),
             DatetimeRange(
-                datetime(2013, 1, 1, 0), datetime(2013, 1, 1, 1),
-                Bound.EXCLUSIVE,
+                datetime(2013, 1, 1, 0), datetime(2013, 1, 1, 1), Bound.EXCLUSIVE
             ),
             datetime(2013, 1, 1, 3),
         ]
         expected = DatetimeRange(
-            datetime(2013, 1, 1, 0), datetime(2013, 1, 1, 3),
+            datetime(2013, 1, 1, 0),
+            datetime(2013, 1, 1, 3),
             (Bound.EXCLUSIVE, Bound.INCLUSIVE),
         )
 
@@ -1230,9 +1201,7 @@ class TestDatetimeRange(unittest.TestCase):
             DatetimeRange(datetime(2012, 1, 1, 1), datetime(2013, 1, 1, 3)),
             DatetimeRange(datetime(2012, 1, 1, 2), datetime(2013, 1, 1, 4)),
         ]
-        expected = [
-            DatetimeRange(datetime(2012, 1, 1, 0), datetime(2013, 1, 1, 4))
-        ]
+        expected = [DatetimeRange(datetime(2012, 1, 1, 0), datetime(2013, 1, 1, 4))]
 
         result = list(DatetimeRange.reduce(test))
         self.assertEqual(result, expected)
@@ -1252,28 +1221,33 @@ class TestDatetimeRange(unittest.TestCase):
         """
         test = [
             DatetimeRange(
-                datetime(2012, 1, 1), datetime(2012, 1, 3),
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 3),
                 (Bound.INCLUSIVE, Bound.INCLUSIVE),
             ),
             DatetimeRange(
-                datetime(2012, 1, 1), datetime(2012, 1, 5),
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 5),
                 (Bound.EXCLUSIVE, Bound.INCLUSIVE),
             ),
             DatetimeRange(
-                datetime(2012, 1, 1), datetime(2012, 1, 5),
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 5),
                 (Bound.INCLUSIVE, Bound.EXCLUSIVE),
             ),
             DatetimeRange(
-                datetime(2012, 1, 3), datetime(2012, 1, 5),
+                datetime(2012, 1, 3),
+                datetime(2012, 1, 5),
                 (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
             ),
         ]
 
         expected = [
             DatetimeRange(
-                datetime(2012, 1, 1), datetime(2012, 1, 5),
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 5),
                 (Bound.INCLUSIVE, Bound.INCLUSIVE),
-            ),
+            )
         ]
 
         result = list(DatetimeRange.reduce(test))
@@ -1294,26 +1268,31 @@ class TestDatetimeRange(unittest.TestCase):
         """
         test = [
             DatetimeRange(
-                datetime(2012, 1, 1), datetime(2012, 1, 2),
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 2),
                 (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
             ),
             DatetimeRange(
-                datetime(2012, 1, 3), datetime(2012, 1, 4),
+                datetime(2012, 1, 3),
+                datetime(2012, 1, 4),
                 (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
             ),
             DatetimeRange(
-                datetime(2012, 1, 2), datetime(2012, 1, 3),
+                datetime(2012, 1, 2),
+                datetime(2012, 1, 3),
                 (Bound.INCLUSIVE, Bound.EXCLUSIVE),
-            )
+            ),
         ]
 
         expected = [
             DatetimeRange(
-                datetime(2012, 1, 1), datetime(2012, 1, 3),
+                datetime(2012, 1, 1),
+                datetime(2012, 1, 3),
                 (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
             ),
             DatetimeRange(
-                datetime(2012, 1, 3), datetime(2012, 1, 4),
+                datetime(2012, 1, 3),
+                datetime(2012, 1, 4),
                 (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
             ),
         ]
@@ -1322,9 +1301,7 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_aligned(self):
-        test = DatetimeRange(
-            datetime(2012, 1, 1, 2, 3, 4), datetime(2012, 1, 2),
-        )
+        test = DatetimeRange(datetime(2012, 1, 1, 2, 3, 4), datetime(2012, 1, 2))
 
         self.assertEqual(
             test.aligned(timedelta(days=1)),
@@ -1412,10 +1389,10 @@ class TestDatetimeRange(unittest.TestCase):
           (345)
         """
         earlier = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 3), Bound.EXCLUSIVE,
+            datetime(2012, 1, 1), datetime(2012, 1, 3), Bound.EXCLUSIVE
         )
         later = DatetimeRange(
-            datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.EXCLUSIVE,
+            datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.EXCLUSIVE
         )
 
         self.assertTrue(earlier.before_disjoint(later))
@@ -1482,7 +1459,7 @@ class TestDatetimeRange(unittest.TestCase):
             datetime(2012, 1, 1), datetime(2012, 1, 3), Bound.EXCLUSIVE
         )
         later = DatetimeRange(
-            datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.INCLUSIVE,
+            datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.INCLUSIVE
         )
 
         self.assertTrue(earlier.before_disjoint(later))
@@ -1549,7 +1526,7 @@ class TestDatetimeRange(unittest.TestCase):
             datetime(2012, 1, 1), datetime(2012, 1, 3), Bound.INCLUSIVE
         )
         later = DatetimeRange(
-            datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.EXCLUSIVE,
+            datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.EXCLUSIVE
         )
 
         self.assertTrue(earlier.before_disjoint(later))
@@ -1613,10 +1590,10 @@ class TestDatetimeRange(unittest.TestCase):
           [345)
         """
         earlier = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 3), Bound.INCLUSIVE,
+            datetime(2012, 1, 1), datetime(2012, 1, 3), Bound.INCLUSIVE
         )
         later = DatetimeRange(
-            datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.INCLUSIVE,
+            datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.INCLUSIVE
         )
 
         self.assertFalse(earlier.before_disjoint(later))
@@ -1666,7 +1643,7 @@ class TestDatetimeRange(unittest.TestCase):
             earlier >= later
 
         overlap = DatetimeRange(
-            datetime(2012, 1, 3), datetime(2012, 1, 3), Bound.INCLUSIVE,
+            datetime(2012, 1, 3), datetime(2012, 1, 3), Bound.INCLUSIVE
         )
         self.assertEqual(earlier.overlapping_range(later), overlap)
         self.assertEqual(later.overlapping_range(earlier), overlap)
@@ -1729,9 +1706,7 @@ class TestDatetimeRange(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             earlier >= later
 
-        overlap = DatetimeRange(
-            datetime(2012, 1, 2), datetime(2012, 1, 4)
-        )
+        overlap = DatetimeRange(datetime(2012, 1, 2), datetime(2012, 1, 4))
         self.assertEqual(earlier.overlapping_range(later), overlap)
         self.assertEqual(later.overlapping_range(earlier), overlap)
 
@@ -1741,11 +1716,13 @@ class TestDatetimeRange(unittest.TestCase):
         """
         # a = (x,y), b = (x,y)
         a = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
         b = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
 
@@ -1796,7 +1773,8 @@ class TestDatetimeRange(unittest.TestCase):
             a >= b
 
         overlap = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
         self.assertEqual(a.overlapping_range(b), overlap)
@@ -1808,11 +1786,13 @@ class TestDatetimeRange(unittest.TestCase):
         """
         # a = [x,y), b = (x,y)
         a = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.EXCLUSIVE),
         )
         b = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
 
@@ -1863,7 +1843,8 @@ class TestDatetimeRange(unittest.TestCase):
             a >= b
 
         overlap = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
         self.assertEqual(a.overlapping_range(b), overlap)
@@ -1875,11 +1856,13 @@ class TestDatetimeRange(unittest.TestCase):
         """
         # a = (x,y], b = (x,y)
         a = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.INCLUSIVE),
         )
         b = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
 
@@ -1930,7 +1913,8 @@ class TestDatetimeRange(unittest.TestCase):
             a >= b
 
         overlap = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
         self.assertEqual(a.overlapping_range(b), overlap)
@@ -1942,11 +1926,13 @@ class TestDatetimeRange(unittest.TestCase):
         """
         # a = [x,y], b = (x,y)
         a = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.INCLUSIVE),
         )
         b = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
 
@@ -1997,7 +1983,8 @@ class TestDatetimeRange(unittest.TestCase):
             a >= b
 
         overlap = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
         )
         self.assertEqual(a.overlapping_range(b), overlap)
@@ -2009,11 +1996,13 @@ class TestDatetimeRange(unittest.TestCase):
         """
         # a = [x,y), b = [x,y]
         a = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.EXCLUSIVE),
         )
         b = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.INCLUSIVE),
         )
 
@@ -2064,7 +2053,8 @@ class TestDatetimeRange(unittest.TestCase):
             a >= b
 
         overlap = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.EXCLUSIVE),
         )
         self.assertEqual(a.overlapping_range(b), overlap)
@@ -2076,11 +2066,13 @@ class TestDatetimeRange(unittest.TestCase):
         """
         # a = (x,y], b = [x,y]
         a = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.INCLUSIVE),
         )
         b = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.INCLUSIVE),
         )
 
@@ -2131,7 +2123,8 @@ class TestDatetimeRange(unittest.TestCase):
             a >= b
 
         overlap = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.EXCLUSIVE, Bound.INCLUSIVE),
         )
         self.assertEqual(a.overlapping_range(b), overlap)
@@ -2143,11 +2136,13 @@ class TestDatetimeRange(unittest.TestCase):
         """
         # a = [x,y], b = [x,y]
         a = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.INCLUSIVE),
         )
         b = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.INCLUSIVE),
         )
 
@@ -2198,7 +2193,8 @@ class TestDatetimeRange(unittest.TestCase):
             a >= b
 
         overlap = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 5),
+            datetime(2012, 1, 1),
+            datetime(2012, 1, 5),
             (Bound.INCLUSIVE, Bound.INCLUSIVE),
         )
         self.assertEqual(a.overlapping_range(b), overlap)
@@ -2262,9 +2258,7 @@ class TestDatetimeRange(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             smaller >= bigger
 
-        overlap = DatetimeRange(
-            datetime(2012, 1, 2), datetime(2012, 1, 4),
-        )
+        overlap = DatetimeRange(datetime(2012, 1, 2), datetime(2012, 1, 4))
         self.assertEqual(smaller.intersection(bigger), overlap)
         self.assertEqual(bigger.intersection(smaller), overlap)
 
@@ -2287,10 +2281,7 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Comparisons on a datetime range start touching a datetime (E).
         """
-        dtr = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 3),
-            Bound.EXCLUSIVE,
-        )
+        dtr = DatetimeRange(datetime(2012, 1, 1), datetime(2012, 1, 3), Bound.EXCLUSIVE)
         dt = datetime(2012, 1, 3)
 
         self.assertTrue(dtr.before_disjoint(dt))
@@ -2303,10 +2294,7 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Comparisons on a datetime range start touching a datetime (I).
         """
-        dtr = DatetimeRange(
-            datetime(2012, 1, 1), datetime(2012, 1, 3),
-            Bound.INCLUSIVE,
-        )
+        dtr = DatetimeRange(datetime(2012, 1, 1), datetime(2012, 1, 3), Bound.INCLUSIVE)
         dt = datetime(2012, 1, 3)
 
         self.assertFalse(dtr.before_disjoint(dt))
@@ -2332,10 +2320,7 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Comparisons on a datetime range end touching a datetime (I).
         """
-        dtr = DatetimeRange(
-            datetime(2012, 1, 3), datetime(2012, 1, 5),
-            Bound.INCLUSIVE,
-        )
+        dtr = DatetimeRange(datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.INCLUSIVE)
         dt = datetime(2012, 1, 3)
 
         self.assertFalse(dtr.before_disjoint(dt))
@@ -2348,10 +2333,7 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Comparisons on a datetime range end touching a datetime (E).
         """
-        dtr = DatetimeRange(
-            datetime(2012, 1, 3), datetime(2012, 1, 5),
-            Bound.EXCLUSIVE,
-        )
+        dtr = DatetimeRange(datetime(2012, 1, 3), datetime(2012, 1, 5), Bound.EXCLUSIVE)
         dt = datetime(2012, 1, 3)
 
         self.assertFalse(dtr.before_disjoint(dt))
@@ -2389,15 +2371,11 @@ class TestDatetimeRange(unittest.TestCase):
             datetime(2012, 10, 1),
             datetime(2012, 11, 1),
             datetime(2012, 12, 1),
-            datetime(2013, 1, 1)
+            datetime(2013, 1, 1),
         ]
-        year_dates = [
-            datetime(2012, 1, 1),
-            datetime(2013, 1, 1)
-        ]
+        year_dates = [datetime(2012, 1, 1), datetime(2013, 1, 1)]
         ranges = [
-            DatetimeRange(s, e, range_bounds)
-            for s, e in zip(dates[0:-1], dates[1::])
+            DatetimeRange(s, e, range_bounds) for s, e in zip(dates[0:-1], dates[1::])
         ]
         year_ranges = [
             DatetimeRange(s, e, range_bounds)
@@ -2408,9 +2386,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertEqual(list(dtr.dates(relativedelta(months=1))), dates)
         self.assertEqual(list(dtr.dates(relativedelta(years=1))), year_dates)
 
-        self.assertEqual(list(dtr.ranges(relativedelta(0))), [DatetimeRange(dt, dt, range_bounds)])  # noqa: E501
+        self.assertEqual(
+            list(dtr.ranges(relativedelta(0))), [DatetimeRange(dt, dt, range_bounds)]
+        )  # noqa: E501
         self.assertEqual(list(dtr.ranges(relativedelta(months=1))), ranges)
-        self.assertEqual(list(dtr.ranges(relativedelta(years=1))), year_ranges)   # noqa: E501
+        self.assertEqual(
+            list(dtr.ranges(relativedelta(years=1))), year_ranges
+        )  # noqa: E501
 
         with self.assertRaises(ValueError):
             next(dtr.dates(relativedelta(months=-1)))
@@ -2424,16 +2406,19 @@ class TestDatetimeRange(unittest.TestCase):
         """
         dtrs = [
             DatetimeRange(
-                datetime(2015, 1, 1), datetime(2015, 3, 1),
-                (Bound.INCLUSIVE, Bound.EXCLUSIVE)
+                datetime(2015, 1, 1),
+                datetime(2015, 3, 1),
+                (Bound.INCLUSIVE, Bound.EXCLUSIVE),
             ),
             DatetimeRange(
-                datetime(2015, 1, 1), datetime(2015, 6, 1),
-                (Bound.INCLUSIVE, Bound.EXCLUSIVE)
+                datetime(2015, 1, 1),
+                datetime(2015, 6, 1),
+                (Bound.INCLUSIVE, Bound.EXCLUSIVE),
             ),
             DatetimeRange(
-                datetime(2015, 3, 1), datetime(2015, 6, 1),
-                (Bound.INCLUSIVE, Bound.EXCLUSIVE)
+                datetime(2015, 3, 1),
+                datetime(2015, 6, 1),
+                (Bound.INCLUSIVE, Bound.EXCLUSIVE),
             ),
         ]
 
@@ -2442,10 +2427,7 @@ class TestDatetimeRange(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             sorted(dtrs[::-1])
 
-        self.assertEqual(
-            sorted(dtrs[::1], key=start_before_key),
-            dtrs,
-        )
+        self.assertEqual(sorted(dtrs[::1], key=start_before_key), dtrs)
         # Indices 0 and 1 treated as equal since they have the same start.
         self.assertEqual(
             sorted(dtrs[::-1], key=start_before_key),
@@ -2524,18 +2506,13 @@ class TestDatetimeRange(unittest.TestCase):
         (01)
         """
         test = [
+            DatetimeRange(datetime(2013, 1, 1, 2), None, Bound.EXCLUSIVE),
             DatetimeRange(
-                datetime(2013, 1, 1, 2), None,
-                Bound.EXCLUSIVE,
-            ),
-            DatetimeRange(
-                datetime(2013, 1, 1, 0), datetime(2013, 1, 1, 1),
-                Bound.EXCLUSIVE,
+                datetime(2013, 1, 1, 0), datetime(2013, 1, 1, 1), Bound.EXCLUSIVE
             ),
         ]
         expected = DatetimeRange(
-            datetime(2013, 1, 1, 0), None,
-            (Bound.EXCLUSIVE, Bound.EXCLUSIVE),
+            datetime(2013, 1, 1, 0), None, (Bound.EXCLUSIVE, Bound.EXCLUSIVE)
         )
 
         result = DatetimeRange.containing(test)
@@ -2574,11 +2551,7 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertRaises(TypeError, cmp_ranges, test_data[6], test_data[6])
 
     def test_effective_ranges(self):
-        dates = [
-            datetime(2013, 1, 1),
-            datetime(2014, 1, 1),
-            datetime(2015, 1, 1),
-        ]
+        dates = [datetime(2013, 1, 1), datetime(2014, 1, 1), datetime(2015, 1, 1)]
 
         bounds = (Bound.INCLUSIVE, Bound.EXCLUSIVE)
 
@@ -2596,11 +2569,13 @@ class TestDatetimeRange(unittest.TestCase):
         Important for working with datetime ranges within dictionaries.
         """
         a = DatetimeRange(
-            datetime(2013, 1, 1), datetime(2014, 1, 1),
+            datetime(2013, 1, 1),
+            datetime(2014, 1, 1),
             (Bound.INCLUSIVE, Bound.EXCLUSIVE),
         )
         b = DatetimeRange(
-            datetime(2013, 1, 1), datetime(2014, 1, 1),
+            datetime(2013, 1, 1),
+            datetime(2014, 1, 1),
             (Bound.INCLUSIVE, Bound.EXCLUSIVE),
         )
         self.assertEqual(hash(a), hash(b))
@@ -2613,14 +2588,13 @@ class TestPeriodEndingAsRange(unittest.TestCase):
 
         self.assertEqual(
             period_ending_as_range(
-                localize(datetime(2013, 11, 3, 2), wpg),
-                timedelta(hours=1),
+                localize(datetime(2013, 11, 3, 2), wpg), timedelta(hours=1)
             ),
             DatetimeRange(
                 localize(datetime(2013, 11, 3, 1), wpg, is_dst=False),
                 localize(datetime(2013, 11, 3, 2), wpg),
                 bounds,
-            )
+            ),
         )
         self.assertEqual(
             period_ending_as_range(
@@ -2631,18 +2605,17 @@ class TestPeriodEndingAsRange(unittest.TestCase):
                 localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
                 localize(datetime(2013, 11, 3, 1), wpg, is_dst=False),
                 bounds,
-            )
+            ),
         )
         self.assertEqual(
             period_ending_as_range(
-                localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
-                timedelta(hours=1),
+                localize(datetime(2013, 11, 3, 1), wpg, is_dst=True), timedelta(hours=1)
             ),
             DatetimeRange(
                 localize(datetime(2013, 11, 3, 0), wpg),
                 localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
                 bounds,
-            )
+            ),
         )
 
     def test_non_existent(self):
@@ -2651,14 +2624,13 @@ class TestPeriodEndingAsRange(unittest.TestCase):
 
         self.assertEqual(
             period_ending_as_range(
-                localize(datetime(2013, 3, 10, 3), wpg),
-                timedelta(hours=1),
+                localize(datetime(2013, 3, 10, 3), wpg), timedelta(hours=1)
             ),
             DatetimeRange(
                 localize(datetime(2013, 3, 10, 1), wpg),
                 localize(datetime(2013, 3, 10, 3), wpg),
                 bounds,
-            )
+            ),
         )
 
 
@@ -2676,31 +2648,30 @@ class TestPeriodBeginningAsRange(unittest.TestCase):
                 localize(datetime(2013, 11, 3, 1), wpg, is_dst=False),
                 localize(datetime(2013, 11, 3, 2), wpg),
                 bounds,
-            )
+            ),
         )
         self.assertEqual(
             period_beginning_as_range(
-                localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
-                timedelta(hours=1),
+                localize(datetime(2013, 11, 3, 1), wpg, is_dst=True), timedelta(hours=1)
             ),
             DatetimeRange(
                 localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
                 localize(datetime(2013, 11, 3, 1), wpg, is_dst=False),
                 bounds,
-            )
+            ),
         )
         self.assertEqual(
             period_beginning_as_range(
-                localize(datetime(2013, 11, 3, 0), wpg),
-                timedelta(hours=1),
+                localize(datetime(2013, 11, 3, 0), wpg), timedelta(hours=1)
             ),
             DatetimeRange(
                 localize(datetime(2013, 11, 3, 0), wpg),
                 localize(datetime(2013, 11, 3, 1), wpg, is_dst=True),
                 bounds,
-            )
+            ),
         )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()

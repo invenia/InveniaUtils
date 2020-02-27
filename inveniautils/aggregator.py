@@ -39,7 +39,7 @@ class TimeSeriesAggregate(object):
         output_target_key=None,  # Rename the target_key field upon aggregation
         release_dates_reducer=None,
         start_inclusive=True,
-        end_inclusive=False
+        end_inclusive=False,
     ):
         if isinstance(primary_keys, str):
             primary_keys = (primary_keys,)
@@ -70,32 +70,26 @@ class TimeSeriesAggregate(object):
     def grouping(self, row):
         if self.target_period is not None:
             period_end = round_datetime(
-                row[self.target_key].end,
-                self.target_period,
-                ceil=True,
+                row[self.target_key].end, self.target_period, ceil=True
             )
             period_start = round_datetime(
-                period_end - self.target_period,
-                self.target_period,
-                ceil=True
+                period_end - self.target_period, self.target_period, ceil=True
             )
 
-            start_inclusivity = Bound.INCLUSIVE \
-                if self.start_inclusive else Bound.EXCLUSIVE
-            end_inclusivity = Bound.INCLUSIVE \
-                if self.end_inclusive else Bound.EXCLUSIVE
+            start_inclusivity = (
+                Bound.INCLUSIVE if self.start_inclusive else Bound.EXCLUSIVE
+            )
+            end_inclusivity = Bound.INCLUSIVE if self.end_inclusive else Bound.EXCLUSIVE
             group_target = DatetimeRange(
-                period_start,
-                period_end,
-                (start_inclusivity, end_inclusivity),
+                period_start, period_end, (start_inclusivity, end_inclusivity)
             )
         else:
             group_target = row[self.target_key]
 
         # Equivalent to: [tuple({...}.items())]
         yield (
-            ((self.output_target_key, group_target),) +
-            tuple((k, row[k]) for k in self.group_by)
+            ((self.output_target_key, group_target),)
+            + tuple((k, row[k]) for k in self.group_by)
         )
 
     def averager(self, identifier, rows):
@@ -140,7 +134,7 @@ class TimeSeriesAggregate(object):
 
             # Make sure to set the tage in the versioned id so that the
             # aggregator doesn't remove it
-            versioned_id['tag'] = next(iter(versioned_rows)).get('tag', None)
+            versioned_id["tag"] = next(iter(versioned_rows)).get("tag", None)
 
             # Perform aggregation for each version
             result = self.aggregator(versioned_id, versioned_rows)
@@ -180,15 +174,13 @@ def group_release_dates(period=timedelta(minutes=1)):
     hour period of each other. Used with TimeSeriesAggregate as a
     "release_dates_reducer".
     """
+
     def period_release_dates(release_dates):
         results = []
 
         # Release dates may not be in ascending order but the loop below
         # needs to work on an ordered list.
-        indices = sorted(
-            range(len(release_dates)),
-            key=lambda k: release_dates[k],
-        )
+        indices = sorted(range(len(release_dates)), key=lambda k: release_dates[k])
         limit = release_dates[0] + period
         for i in indices:
             release_date = release_dates[i]
@@ -238,8 +230,4 @@ def extend_date_range(date_range, period, bounds=None):
     else:
         (start_bound, end_bound) = bounds
 
-    return DatetimeRange(
-        start=start,
-        end=end,
-        bounds=(start_bound, end_bound),
-    )
+    return DatetimeRange(start=start, end=end, bounds=(start_bound, end_bound))
