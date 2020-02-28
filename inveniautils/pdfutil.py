@@ -11,17 +11,18 @@ class PDFMinerTextExtractionFileWrapper:
         self._resource_manager = PDFResourceManager()
         self._pages = list(PDFPage.get_pages(contents))
 
-    def extract_text(self, page_index: int = None, laparams: LAParams = None):
+    def extract_text(self, page_index: int = None, laparams: LAParams = None) -> str:
         """
         Extracts text from a PDF file.
 
-        page_index: The index of the page that text will be extracted from.
-                    If None, text from all pages in the file will be extracted.
-        laparams: A pdfminer.layout.LAParams object used to analyze the layout of the
-                  PDF file to space out sentences and paragraphs.
+        Args:
+            page_index: The index of the page that text will be extracted from.
+                        If None, text from all pages in the file will be extracted.
+            laparams: A pdfminer LAParams object used to analyze the layout of the PDF
+                      file to space out sentences and paragraphs.
 
-        Return:
-        A string containing the extracted text.
+        Returns:
+            A string containing the extracted text.
         """
 
         if page_index is not None:
@@ -43,5 +44,6 @@ class PDFMinerTextExtractionFileWrapper:
 
             return text_buffer.getvalue()
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """Returns the number of pages in the PDF file"""
         return len(self._pages)

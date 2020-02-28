@@ -2,8 +2,8 @@
 include:
   - project: infrastructure/gitlab-ci-helper
     file: /templates/python.yml
-  # - project: infrastructure/gitlab-ci-helper
-  #   file: /templates/teardown.yml
+  - project: infrastructure/gitlab-ci-helper
+    file: /templates/teardown.yml
 
 # teardown.yml will include "Coverage", "Documentation", and "pages"
 

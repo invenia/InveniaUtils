@@ -1,9 +1,15 @@
-def float_to_decimal_str(f):
+def float_to_decimal_str(f: float) -> str:
     """
     Convert the given float to a string without resorting to scientific
     notation
 
     Found code here https://stackoverflow.com/a/38983595/4487518
+
+    Args:
+        f: A floating point number
+
+    Returns:
+        A string, without scientific notation, that representing the input float
     """
     float_string = repr(f)
     # detect scientific notation
