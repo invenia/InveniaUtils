@@ -1,11 +1,11 @@
 import calendar
-import collections
 import regex
 import pytz
 
+from collections.abc import Iterable
 from datetime import datetime, timedelta
-from inveniautils.mathutil import RoundingMode, round_to
 from dateutil.parser import parse as dateutil_parse
+from inveniautils.mathutil import RoundingMode, round_to
 from pytz import utc
 
 
@@ -125,7 +125,7 @@ def split(dates, pivot):
     """
     from .datetime_range import DatetimeRange, Bound
 
-    if not isinstance(dates, collections.Iterable):
+    if not isinstance(dates, Iterable):
         dates = [dates]
 
     before = []
@@ -394,7 +394,7 @@ def contains(dates, date):
     if dates is None:
         dates = []
 
-    if not isinstance(dates, collections.Iterable):
+    if not isinstance(dates, Iterable):
         dates = [dates]
 
     for d in dates:

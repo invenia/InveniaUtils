@@ -3,7 +3,8 @@ lxml
 pint
 python-dateutil
 cryptography
-nose
+pytest
+pytest-cov
 coverage
 nose-exclude
 regex

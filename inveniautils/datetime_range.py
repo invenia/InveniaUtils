@@ -1,5 +1,6 @@
-import collections
 import re
+
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 from functools import partial
 from functools import cmp_to_key
@@ -265,7 +266,7 @@ class DatetimeRange(object):
     @classmethod
     def containing(cls, dates):
         container = None
-        if not isinstance(dates, collections.Iterable):
+        if not isinstance(dates, Iterable):
             dates = [dates]
 
         for date in dates:
