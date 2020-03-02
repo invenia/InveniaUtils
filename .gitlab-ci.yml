@@ -1,0 +1,21 @@
+---
+include:
+  - project: infrastructure/gitlab-ci-helper
+    file: /templates/python.yml
+  - project: infrastructure/gitlab-ci-helper
+    file: /templates/teardown.yml
+
+# teardown.yml will include "Coverage", "Documentation", and "pages"
+
+"Test Python 3.7":
+  extends: .test_3_7
+
+# Eventually we will want this package in PyPiCloud.
+# "Upload to PyPiCloud":
+#   extends: .upload_to_pypicloud
+
+"Check Code Format":
+  stage: setup
+  extends: .py_3_7
+  script:
+    - tox -re formatting

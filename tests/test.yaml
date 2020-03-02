@@ -1,0 +1,10 @@
+cred_store:
+  thingy:
+    athing: hello
+datafeeds:
+  another:
+    thing: boop
+raw_store:
+  why:
+    rabi: 'Somethings gotta ease your mind'
+empty:

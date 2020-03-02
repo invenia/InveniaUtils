@@ -1,0 +1,36 @@
+Date: Tue, 03 Feb 2015 15:28:09 GMT
+Content-Length: 2719
+Content-Type: multipart/related; type="text/xml"; start="<F384B93381EF4D5D6AE349960646EEC5>"; 	boundary="----=_Part_2973930_1503260873.1422977293849"
+Server: Jetty/4.2.x (Linux/2.6.18-371.el5 amd64 java/1.6.0_31)
+
+
+------=_Part_2973930_1503260873.1422977293849
+Content-Type: text/xml; charset=UTF-8
+Content-Transfer-Encoding: binary
+Content-Id: <F384B93381EF4D5D6AE349960646EEC5>
+
+<?xml version="1.0" encoding="UTF-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <SOAP-ENV:Header><ns1:attachmentHash xmlns:ns1="http://www.caiso.com/mrtu/soa/schemas/2005/09/attachmenthash" SOAP-ENV:actor="http://schemas.xmlsoap.org/soap/actor/next" SOAP-ENV:mustUnderstand="0"><ns1:hashValue>kSjJcLPZtv7o07MHodWDDNSNd1Q=</ns1:hashValue></ns1:attachmentHash><ns1:standardAttachmentInfor xmlns:ns1="http://www.caiso.com/soa/2006-06-13/StandardAttachmentInfor.xsd"><Attachment><id>1</id><compressFlag>yes</compressFlag><compressMethod>gzip</compressMethod></Attachment></ns1:standardAttachmentInfor></SOAP-ENV:Header><SOAP-ENV:Body><retrieveConvergenceBidAwards_v2 xmlns="http://www.caiso.com/soa/retrieveConvergenceBidAwards_v2"><ConvergenceBidAwards_attachment/></retrieveConvergenceBidAwards_v2></SOAP-ENV:Body> </SOAP-ENV:Envelope>
+------=_Part_2973930_1503260873.1422977293849
+Content-Type: application/octetstream
+Content-Transfer-Encoding: binary
+Content-Id: <FA9970F68BCD2D9104E861FA3E9D67B7>
+
+H4sIAAAAAAAAAO1bW2+iQBR+51cY91mBsV5qKM2oqOwCEsTu9skQmbQkFhpAbf/9jpfdNq2zPc2s
+BCmJwQzDAN/5zm3ODMr108OysiZxEkThVVWuS9UKCReRH4R3V9WZO6x1qteqoPSjkF50R7tIL/Dx
+xov9pEKHhslV9T5NH7uiuNls6gsvSKL6InoQk8gTjw2ar1H9KfG/VelNTZIk3h0ZE88nMW27wQMZ
+eClRkSQ3axKqSQ1XandRpys3FPFvr6BMo1W8IGof69OJIh5agnKzh6Gu6fgLWZJkRfxzSlDEt087
+tG3veRl5/juMDklWyzRxyCKKt71BoocpidOAqBZ96KumoNhh5BMVGzaejcZzeW7tnr0/KyjJ4p74
+qyWVaD+i9wpCL41i1dFMes3xPkFZB3G68pb0PdznR6Le6I47w0ZloJnYGijim24qupii2r3R2ltS
+KXn03NhR0YUi0j/69ocuLfS3cjxIWK6htit1upJEf7XdkSJ7c+nL4Gnqxem74e3jw18upqL+qVKs
+9Cgo6fZFX5FM79FSxJezlKhjWBj4ZOljfDIfPpkbXxuAT/y38vGqZm/iONpoMm9tVfPyJKo5ndm2
+cQtXzUsAcwzRQ5lrZcFc0TWThU8G4Lvkw8cQz1lZXh8bQwP/2ltePoJCA8CczMecVATmxrq19Zij
+3BAndwDRHPFFcwbx/zean5o5fdqfuNg+pdF9NtwhgNExrAZKHcPbZhIOAHmmzKeZLJeUCbwmAF6D
+Dx5DOpnAawHgXfDBY0gnE3gAt8nKFaHwmkUIeDPT1K3RNE+5ShtAHUP2UOoYin1m1N1iE++Ja+Qi
+3pXEgYgb6cOhZuXJ4spE5SwSlVPrpdNzbgxDy1MKXc5bgdRp2DV+5CqMIwB3rEIy1KtwV/t46tAA
+eHzFMFaVvpwf5MfyxpOJjfPkMWWA2SE+l4mK4DLHtmENvru5og6Qh7FkD7W5TPKwE1NnutYIuyfN
+Uz4b7Iq+slWUlZ/S8rgsb2Lo1uCk4e6zhlfW+UDE2Rp2esbUnCNKHZJyQZ0MqBex1qagGTR3psIz
+QQAEBYlvBYG18pcJPgTY7iDxTRFY4skGH2SGx1fPZIknG/0sykyBhQ9Q90N8dT+WeLLBB1ihRHz+
+hSWebPB9WILoMB08FF8RShD2ZDAfODNz3p7PLN2tNGvY3sbhPMxoC1Ijy4BBG/cNymFrx2GOGCx6
+klaU/VVfNAktg3wZ5L9CkJ/qmuNgW89T7QUBqmasJTqob+EuvnD4lqLsADy1am73kOVqIaWsTJx3
+ZaLojqXoWyMK8wniB55TfPc96dHvX1XhN8OovGFzOwAA
+------=_Part_2973930_1503260873.1422977293849--

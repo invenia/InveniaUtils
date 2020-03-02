@@ -1,0 +1,13 @@
+pytz
+lxml
+pint
+python-dateutil
+cryptography
+pytest
+pytest-cov
+coverage
+nose-exclude
+regex
+requests
+pyyaml
+pdfminer.six
