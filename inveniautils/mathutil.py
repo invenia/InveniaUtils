@@ -4,15 +4,17 @@ from itertools import repeat
 
 def angle_mean_radians(angles, weights=repeat(1)):
     return math.atan2(
-        math.fsum(math.sin(a) * w for a, w in zip(angles, weights)) / len(angles), # noqa
-        math.fsum(math.cos(a) * w for a, w in zip(angles, weights)) / len(angles), # noqa
+        math.fsum(math.sin(a) * w for a, w in zip(angles, weights))
+        / len(angles),  # noqa
+        math.fsum(math.cos(a) * w for a, w in zip(angles, weights))
+        / len(angles),  # noqa
     ) % (math.pi * 2)
 
 
 def angle_mean_degrees(angles, weights=repeat(1)):
-    return math.degrees(angle_mean_radians(
-        [math.radians(angle) for angle in angles], weights,
-    ))
+    return math.degrees(
+        angle_mean_radians([math.radians(angle) for angle in angles], weights)
+    )
 
 
 def mean(vals):

@@ -1,19 +1,19 @@
-import collections
 import re
+
+from collections.abc import Iterable
 from datetime import datetime, timedelta
 from functools import partial
 from functools import cmp_to_key
 
 from inveniautils.compat import cmp
-from inveniautils.dates import (
-    GUESS_DST, normalize, relocalize, round_datetime, utc,
-)
+from inveniautils.dates import GUESS_DST, normalize, relocalize, round_datetime, utc
 
 from dateutil.parser import parse as datetime_parser
 from dateutil.relativedelta import relativedelta
 
 
-MATH_RANGE = re.compile(r"""
+MATH_RANGE = re.compile(
+    r"""
     ^\s*
     (?P<inclusive_start>[\(\[])
     \s*
@@ -23,16 +23,21 @@ MATH_RANGE = re.compile(r"""
     \s*
     (?P<inclusive_end>[\)\]])
     \s*$
-""", re.VERBOSE)
+""",
+    re.VERBOSE,
+)
 
 
-SIMPLE_RANGE = re.compile(r"""
+SIMPLE_RANGE = re.compile(
+    r"""
     ^\s*
     (?P<start_date>.+?)
     \s+to\s+
     (?P<end_date>.+?)
     \s*$
-""", re.VERBOSE)
+""",
+    re.VERBOSE,
+)
 
 # Note: Should make an actual infinite datetime.
 POS_INF_DATETIME = datetime.max
@@ -41,8 +46,14 @@ POS_INF_DATETIME_TZ = datetime.max.replace(tzinfo=utc)
 
 def is_positive_delta(delta):
     fields = [
-        'days', 'hours', 'leapdays', 'microseconds', 'minutes', 'months',
-        'seconds', 'years'
+        "days",
+        "hours",
+        "leapdays",
+        "microseconds",
+        "minutes",
+        "months",
+        "seconds",
+        "years",
     ]
 
     if isinstance(delta, relativedelta):
@@ -58,8 +69,14 @@ def is_positive_delta(delta):
 
 def is_zero_delta(delta):
     fields = [
-        'days', 'hours', 'leapdays', 'microseconds', 'minutes', 'months',
-        'seconds', 'years'
+        "days",
+        "hours",
+        "leapdays",
+        "microseconds",
+        "minutes",
+        "months",
+        "seconds",
+        "years",
     ]
 
     if isinstance(delta, relativedelta):
@@ -97,10 +114,7 @@ def period_ending_as_range(dt, period):
     appropriate datetime range. May not work as expected if you want
     units such as "a day".
     """
-    return DatetimeRange(
-        normalize(dt - period), dt,
-        (Bound.INCLUSIVE, Bound.EXCLUSIVE),
-    )
+    return DatetimeRange(normalize(dt - period), dt, (Bound.INCLUSIVE, Bound.EXCLUSIVE))
 
 
 def period_beginning_as_range(dt, period):
@@ -109,10 +123,7 @@ def period_beginning_as_range(dt, period):
     appropriate datetime range. May not work as expected if you want
     units such as "a day".
     """
-    return DatetimeRange(
-        dt, normalize(dt + period),
-        (Bound.INCLUSIVE, Bound.EXCLUSIVE)
-    )
+    return DatetimeRange(dt, normalize(dt + period), (Bound.INCLUSIVE, Bound.EXCLUSIVE))
 
 
 # Compare two DatetimeRange objects.
@@ -174,19 +185,19 @@ class DatetimeRange(object):
         start_tz = self._start.tzinfo
         end_tz = self._end.tzinfo
         if (
-            start_tz is None and end_tz is not None or
-            start_tz is not None and end_tz is None
+            start_tz is None
+            and end_tz is not None
+            or start_tz is not None
+            and end_tz is None
         ):
             raise ValueError(
-                'Both start and end date must be either offset-naive or '
-                'offset-aware datetimes'
+                "Both start and end date must be either offset-naive or "
+                "offset-aware datetimes"
             )
 
         # Expecting start to be before end.
         if self._start > self._end:
-            raise ValueError(
-                'Start of range must not be greater than end of range.'
-            )
+            raise ValueError("Start of range must not be greater than end of range.")
 
         # Handle assignment of bounds as one value.
         if isinstance(bounds, int):
@@ -196,7 +207,7 @@ class DatetimeRange(object):
             self._include_start = bounds[0] == Bound.INCLUSIVE
             self._include_end = bounds[1] == Bound.INCLUSIVE
         else:
-            raise ValueError('Bounds expected to be a two element tuple.')
+            raise ValueError("Bounds expected to be a two element tuple.")
 
         # Unbounded range should not include that end point.
         if self._infinite_end:
@@ -218,35 +229,29 @@ class DatetimeRange(object):
 
         if component:
             try:
-                start_date = datetime_parser(
-                    component['start_date'], default=base,
-                )
+                start_date = datetime_parser(component["start_date"], default=base)
             except TypeError:
                 raise ValueError(
-                    'Unable to parse start date: {}'.
-                    format(
-                        component['start_date'],
-                    )
+                    "Unable to parse start date: {}".format(component["start_date"])
                 )
 
             try:
-                end_date = datetime_parser(
-                    component['end_date'], default=base,
-                )
+                end_date = datetime_parser(component["end_date"], default=base)
             except TypeError:
                 raise ValueError(
-                    'Unable to parse end date: {}'.
-                    format(
-                        component['end_date'],
-                    )
+                    "Unable to parse end date: {}".format(component["end_date"])
                 )
 
-            if 'inclusive_start' in component and component['inclusive_start'] == '(':  # noqa: E501
+            if (
+                "inclusive_start" in component and component["inclusive_start"] == "("
+            ):  # noqa: E501
                 start_bound = Bound.EXCLUSIVE
             else:
                 start_bound = Bound.INCLUSIVE
 
-            if 'inclusive_end' in component and component['inclusive_end'] == ')':  # noqa: E501
+            if (
+                "inclusive_end" in component and component["inclusive_end"] == ")"
+            ):  # noqa: E501
                 end_bound = Bound.EXCLUSIVE
             else:
                 end_bound = Bound.INCLUSIVE
@@ -256,14 +261,12 @@ class DatetimeRange(object):
         return cls(start_date, end_date, bounds=(start_bound, end_bound))
 
     def copy(self):
-        return DatetimeRange(
-            self._start, self._end, (self.start_bound, self.end_bound),
-        )
+        return DatetimeRange(self._start, self._end, (self.start_bound, self.end_bound))
 
     @classmethod
     def containing(cls, dates):
         container = None
-        if not isinstance(dates, collections.Iterable):
+        if not isinstance(dates, Iterable):
             dates = [dates]
 
         for date in dates:
@@ -319,8 +322,7 @@ class DatetimeRange(object):
 
             if effective_start is not None and effective_until is not None:
                 yield cls(
-                    effective_start, effective_until,
-                    (Bound.INCLUSIVE, Bound.EXCLUSIVE),
+                    effective_start, effective_until, (Bound.INCLUSIVE, Bound.EXCLUSIVE)
                 )
 
             effective_start = effective_until
@@ -334,18 +336,25 @@ class DatetimeRange(object):
         ranges: iterable of date range objects.
         """
         # Order ranges in order to make reduction easier.
-        ranges = sorted(ranges, key=cmp_to_key(lambda x, y: (
-            cmp(x.start, y.start) or
-            cmp(y.start_included, x.start_included) or
-            cmp(y.end, x.end) or
-            cmp(y.end_included, x.end_included)
-        )))
+        ranges = sorted(
+            ranges,
+            key=cmp_to_key(
+                lambda x, y: (
+                    cmp(x.start, y.start)
+                    or cmp(y.start_included, x.start_included)
+                    or cmp(y.end, x.end)
+                    or cmp(y.end_included, x.end_included)
+                )
+            ),
+        )
 
         expanded = None
         for dtr in ranges:
             if expanded is None:
                 expanded = dtr.copy()
-            elif expanded.before_touching(dtr) or expanded.before_overlaps(dtr):  # noqa: E501
+            elif expanded.before_touching(dtr) or expanded.before_overlaps(
+                dtr
+            ):  # noqa: E501
                 expanded.end = dtr.end
                 expanded.end_included = dtr.end_included
             elif expanded.before_disjoint(dtr):
@@ -368,19 +377,15 @@ class DatetimeRange(object):
         else:
             end = None
 
-        return DatetimeRange(
-            start, end,
-            (self.start_bound, self.end_bound),
-        )
+        return DatetimeRange(start, end, (self.start_bound, self.end_bound))
 
     def astimezone(self, tz):
         if not self.tz_aware:
-            raise ValueError(
-                'astimezone() cannot be applied to a naive DatetimeRange'
-            )
+            raise ValueError("astimezone() cannot be applied to a naive DatetimeRange")
 
         return DatetimeRange(
-            self._start.astimezone(tz), self._end.astimezone(tz),
+            self._start.astimezone(tz),
+            self._end.astimezone(tz),
             (self.start_bound, self.end_bound),
         )
 
@@ -396,18 +401,16 @@ class DatetimeRange(object):
             self._start = value
         elif self.tz_aware != tz_aware and not self.tz_aware:
             raise ValueError(
-                'DatetimeRange is currently timezone naive and requires a '
-                'offset-naive end datetime'
+                "DatetimeRange is currently timezone naive and requires a "
+                "offset-naive end datetime"
             )
         elif self.tz_aware != tz_aware and self.tz_aware:
             raise ValueError(
-                'DatetimeRange is currently timezone aware and requires a '
-                'offset-aware end datetime'
+                "DatetimeRange is currently timezone aware and requires a "
+                "offset-aware end datetime"
             )
         else:
-            raise ValueError(
-                'Start datetime cannot be greater than end datetime'
-            )
+            raise ValueError("Start datetime cannot be greater than end datetime")
 
     @property
     def end(self):
@@ -426,18 +429,16 @@ class DatetimeRange(object):
             self.end_infinite = is_infinite_datetime(value)
         elif self.tz_aware != tz_aware and not self.tz_aware:
             raise ValueError(
-                'DatetimeRange is currently timezone naive and requires a '
-                'offset-naive end datetime'
+                "DatetimeRange is currently timezone naive and requires a "
+                "offset-naive end datetime"
             )
         elif self.tz_aware != tz_aware and self.tz_aware:
             raise ValueError(
-                'DatetimeRange is currently timezone aware and requires a '
-                'offset-aware end datetime'
+                "DatetimeRange is currently timezone aware and requires a "
+                "offset-aware end datetime"
             )
         else:
-            raise ValueError(
-                'End datetime cannot be less than start datetime'
-            )
+            raise ValueError("End datetime cannot be less than start datetime")
 
     @property
     def start_included(self):
@@ -455,8 +456,7 @@ class DatetimeRange(object):
     def end_included(self, value):
         if self._infinite_end:
             raise ValueError(
-                'Unable to set end to included on a range with an '
-                'infinite range'
+                "Unable to set end to included on a range with an " "infinite range"
             )
 
         self._include_end = value
@@ -473,9 +473,7 @@ class DatetimeRange(object):
         if Bound.valid(value):
             self._include_start = value == Bound.INCLUSIVE
         else:
-            raise ValueError(
-                'Invalid starting bound. Use Bound class instead.'
-            )
+            raise ValueError("Invalid starting bound. Use Bound class instead.")
 
     @property
     def end_bound(self):
@@ -488,16 +486,13 @@ class DatetimeRange(object):
     def end_bound(self, value):
         if self._infinite_end:
             raise ValueError(
-                'Unable to set end bound on a range with an '
-                'infinite range'
+                "Unable to set end bound on a range with an " "infinite range"
             )
 
         if Bound.valid(value):
             self._include_end = value == Bound.INCLUSIVE
         else:
-            raise ValueError(
-                'Invalid ending bound. Use Bound class instead.'
-            )
+            raise ValueError("Invalid ending bound. Use Bound class instead.")
 
     @property
     def end_infinite(self):
@@ -526,7 +521,7 @@ class DatetimeRange(object):
     @tz_aware.setter
     def tz_aware(self, value):
         if not isinstance(value, bool):
-            raise ValueError('tz_aware must of type bool')
+            raise ValueError("tz_aware must of type bool")
 
         if value:
             if self._start.tzinfo is None:
@@ -548,14 +543,11 @@ class DatetimeRange(object):
         """
         if isinstance(date, DatetimeRange):
             return self.end < date.start or (
-                (not self.end_included or not date.start_included) and
-                self.end == date.start
+                (not self.end_included or not date.start_included)
+                and self.end == date.start
             )
         else:
-            return self.end < date or (
-                not self.end_included and
-                self.end == date
-            )
+            return self.end < date or (not self.end_included and self.end == date)
 
     def after_disjoint(self, date):
         """
@@ -564,14 +556,11 @@ class DatetimeRange(object):
         """
         if isinstance(date, DatetimeRange):
             return self.start > date.end or (
-                (not self.start_included or not date.end_included) and
-                self.start == date.end
+                (not self.start_included or not date.end_included)
+                and self.start == date.end
             )
         else:
-            return self.start > date or (
-                not self.start_included and
-                self.start == date
-            )
+            return self.start > date or (not self.start_included and self.start == date)
 
     def before_overlaps(self, dtr):
         """
@@ -579,18 +568,15 @@ class DatetimeRange(object):
         before the start of the B and the A ends within B.
         """
         starts_before = self.start < dtr.start or (
-            self.start_included and not dtr.start_included and
-            self.start == dtr.start
+            self.start_included and not dtr.start_included and self.start == dtr.start
         )
 
         ends_before_or_equal = self.end < dtr.end or (
-            (not self.end_included or dtr.end_included) and
-            self.end == dtr.end
+            (not self.end_included or dtr.end_included) and self.end == dtr.end
         )
 
         overlap = self.end > dtr.start or (
-            self.end_included and dtr.start_included and
-            self.end == dtr.start
+            self.end_included and dtr.start_included and self.end == dtr.start
         )
 
         return starts_before and ends_before_or_equal and overlap
@@ -604,16 +590,20 @@ class DatetimeRange(object):
         in anyway.
         """
         return (
-            self.start < dtr.end and self.end > dtr.start or
-            dtr.start < self.end and dtr.end > self.start or
-            self.end_included and dtr.start_included and self.end == dtr.start or  # noqa: E501
-            dtr.end_included and self.start_included and dtr.end == self.start
+            self.start < dtr.end
+            and self.end > dtr.start
+            or dtr.start < self.end
+            and dtr.end > self.start
+            or self.end_included
+            and dtr.start_included
+            and self.end == dtr.start
+            or dtr.end_included  # noqa: E501
+            and self.start_included
+            and dtr.end == self.start
         )
 
     def before_touching(self, dtr):
-        return (
-            (self.end_included or dtr.start_included) and self.end == dtr.start
-        )
+        return (self.end_included or dtr.start_included) and self.end == dtr.start
 
     def after_touching(self, dtr):
         return dtr.before_touching(self)
@@ -625,8 +615,9 @@ class DatetimeRange(object):
         """
         if isinstance(date, DatetimeRange):
             return self.start < date.start or (
-                self.start_included and not date.start_included and
-                self.start == date.start
+                self.start_included
+                and not date.start_included
+                and self.start == date.start
             )
         else:
             return self.start < date
@@ -639,10 +630,7 @@ class DatetimeRange(object):
         if isinstance(date, DatetimeRange):
             return date.starts_before(self)
         else:
-            return self.start > date or (
-                not self.start_included and
-                self.start == date
-            )
+            return self.start > date or (not self.start_included and self.start == date)
 
     def ends_before(self, date):
         """
@@ -651,14 +639,10 @@ class DatetimeRange(object):
         """
         if isinstance(date, DatetimeRange):
             return self.end < date.end or (
-                not self.end_included and date.end_included and
-                self.end == date.end
+                not self.end_included and date.end_included and self.end == date.end
             )
         else:
-            return self.end < date or (
-                not self.end_included and
-                self.end == date
-            )
+            return self.end < date or (not self.end_included and self.end == date)
 
     def ends_after(self, date):
         """
@@ -673,35 +657,30 @@ class DatetimeRange(object):
     def contains(self, date):
         if isinstance(date, DatetimeRange):
             return (
-                (
-                    date.start > self.start or
-                    date.start == self.start and (
-                        self.start_included or
-                        not date.start_included
-                    )
-                ) and
-                (
-                    date.end < self.end or
-                    date.end == self.end and (
-                        self.end_included or
-                        not date.end_included
-                    )
-                )
+                date.start > self.start
+                or date.start == self.start
+                and (self.start_included or not date.start_included)
+            ) and (
+                date.end < self.end
+                or date.end == self.end
+                and (self.end_included or not date.end_included)
             )
         else:
             return (
-                self._start < date < self._end or
-                self._include_start and self._start == date or
-                self._include_end and self._end == date
+                self._start < date < self._end
+                or self._include_start
+                and self._start == date
+                or self._include_end
+                and self._end == date
             )
 
     def __eq__(self, dtr):
         return (
-            type(self) == type(dtr) and
-            self.start == dtr.start and
-            self.end == dtr.end and
-            self.start_included == dtr.start_included and
-            self.end_included == dtr.end_included
+            type(self) == type(dtr)
+            and self.start == dtr.start
+            and self.end == dtr.end
+            and self.start_included == dtr.start_included
+            and self.end_included == dtr.end_included
         )
 
     def __ne__(self, dtr):
@@ -711,19 +690,13 @@ class DatetimeRange(object):
         if isinstance(date, DatetimeRange):
             raise NotImplementedError
         else:
-            return self.end < date or (
-                not self.end_included and
-                self.end == date
-            )
+            return self.end < date or (not self.end_included and self.end == date)
 
     def __gt__(self, date):
         if isinstance(date, DatetimeRange):
             raise NotImplementedError
         else:
-            return self.start > date or (
-                not self.start_included and
-                self.start == date
-            )
+            return self.start > date or (not self.start_included and self.start == date)
 
     def __le__(self, dtr):
         raise NotImplementedError
@@ -737,25 +710,24 @@ class DatetimeRange(object):
     def __hash__(self):
         # Note: Probably could have a better hashing algorithm but this
         # functionally works.
-        return hash((
-            self.start,
-            self.end,
-            self.start_included,
-            self.end_included,
-        ))
+        return hash((self.start, self.end, self.start_included, self.end_included))
 
     def overlapping_range(self, dtr):
         if not self.overlaps(dtr):
             raise ValueError("Ranges do not overlap!")
 
-        if self.start > dtr.start or (not self.start_included and self.start == dtr.start):  # noqa: E501
+        if self.start > dtr.start or (
+            not self.start_included and self.start == dtr.start
+        ):  # noqa: E501
             start = self.start
             start_bound = self.start_bound
         else:
             start = dtr.start
             start_bound = dtr.start_bound
 
-        if self.end < dtr.end or (not self.end_included and self.end == dtr.end):  # noqa: E501
+        if self.end < dtr.end or (
+            not self.end_included and self.end == dtr.end
+        ):  # noqa: E501
             end = self.end
             end_bound = self.end_bound
         else:
@@ -809,9 +781,7 @@ class DatetimeRange(object):
         if tz and self.tz_aware:
             dt = dt.astimezone(tz)
         elif tz and not self.tz_aware:
-            raise ValueError(
-                "timezone cannot be applied to a naive DatetimeRange"
-            )
+            raise ValueError("timezone cannot be applied to a naive DatetimeRange")
 
         if is_positive_delta(interval):
             if reverse:
@@ -832,12 +802,13 @@ class DatetimeRange(object):
         elif is_zero_delta(interval):
             yield dt
         else:
-            raise ValueError(
-                "Interval only supports non-negative timedeltas."
-            )
+            raise ValueError("Interval only supports non-negative timedeltas.")
 
     def ranges(
-        self, interval, reverse=False, tz=None,
+        self,
+        interval,
+        reverse=False,
+        tz=None,
         bounds=(Bound.INCLUSIVE, Bound.EXCLUSIVE),
     ):
         """
@@ -858,9 +829,9 @@ class DatetimeRange(object):
         if end_bound == output_end_bound == Bound.EXCLUSIVE:
             end_bound = Bound.INCLUSIVE
 
-        iterator = DatetimeRange(
-            self.start, self.end, (start_bound, end_bound),
-        ).dates(interval, reverse, tz)
+        iterator = DatetimeRange(self.start, self.end, (start_bound, end_bound)).dates(
+            interval, reverse, tz
+        )
 
         last_dt, dt = next(iterator), None
 
@@ -873,15 +844,10 @@ class DatetimeRange(object):
                 last_dt = dt
 
     def __repr__(self):
-        start_bound = '[' if self._include_start else '('
-        end_bound = ']' if self._include_end else ')'
+        start_bound = "[" if self._include_start else "("
+        end_bound = "]" if self._include_end else ")"
 
         start = self._start
         end = self._end if not self._infinite_end else "Inf"
 
-        return "{}{}, {}{}".format(
-            start_bound,
-            start,
-            end,
-            end_bound,
-        )
+        return "{}{}, {}{}".format(start_bound, start, end, end_bound)

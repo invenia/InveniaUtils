@@ -3,7 +3,12 @@ import unittest
 from . import full_path
 
 from inveniautils.stream import (
-    compress, decompress, equal, equal_safe, compression_ratio, UnzipSingle
+    compress,
+    decompress,
+    equal,
+    equal_safe,
+    compression_ratio,
+    UnzipSingle,
 )
 
 from io import StringIO, BytesIO
@@ -13,39 +18,36 @@ class TestCompression(unittest.TestCase):
     """
     Test the compression module.
     """
+
     def test_decompress_uncompressed_data(self):
         """
         Test decompression on an uncompressed stream.
         """
-        uncompressed = BytesIO(b'stream')
-        self.assertRaises(
-            IOError,
-            decompress,
-            uncompressed,
-        )
+        uncompressed = BytesIO(b"stream")
+        self.assertRaises(IOError, decompress, uncompressed)
 
     def test_decompress_gzip(self):
         """
         Test gzip decompression.
         """
         empty = {
-            'uncompressed': '',
-            'compressed': BytesIO(
-                b'\x1f\x8b\x08\x00\x13\x0b\xa3S\x02\xff\x03\x00\x00\x00'
-                b'\x00\x00\x00\x00\x00\x00'
+            "uncompressed": "",
+            "compressed": BytesIO(
+                b"\x1f\x8b\x08\x00\x13\x0b\xa3S\x02\xff\x03\x00\x00\x00"
+                b"\x00\x00\x00\x00\x00\x00"
             ),
         }
 
         text = {
-            'uncompressed': 'foo bar baz',
-            'compressed': BytesIO(
-                b'\x1f\x8b\x08\x00\xa3\t\xa3S\x02\xffK\xcb\xcfWHJ,\x02'
-                b'\xe2*\x00a\xdeb\xf2\x0b\x00\x00\x00'
+            "uncompressed": "foo bar baz",
+            "compressed": BytesIO(
+                b"\x1f\x8b\x08\x00\xa3\t\xa3S\x02\xffK\xcb\xcfWHJ,\x02"
+                b"\xe2*\x00a\xdeb\xf2\x0b\x00\x00\x00"
             ),
         }
 
         for content, compressed in (
-            (d['uncompressed'], d['compressed']) for d in (empty, text)
+            (d["uncompressed"], d["compressed"]) for d in (empty, text)
         ):
             # Move file pointer to ensure that decompress works on the
             # entire stream.
@@ -62,16 +64,11 @@ class TestCompression(unittest.TestCase):
         """
         Test compression method "None".
         """
-        content = 'yellow bananas are delicious'
+        content = "yellow bananas are delicious"
         uncompressed = BytesIO(content.encode())
         uncompressed.seek(3)
 
-        self.assertRaises(
-            TypeError,
-            compress,
-            uncompressed,
-            method=None,
-        )
+        self.assertRaises(TypeError, compress, uncompressed, method=None)
 
         # Compress should return the file pointer back to its original
         # position even if an exception occurs.
@@ -81,7 +78,7 @@ class TestCompression(unittest.TestCase):
         """
         Test gzip compression on empty data.
         """
-        content = ''
+        content = ""
         uncompressed = BytesIO(content.encode())
         compressed = compress(uncompressed)
 
@@ -99,7 +96,7 @@ class TestCompression(unittest.TestCase):
         """
         Test gzip compression on non-empty data.
         """
-        content = 'foo bar baz'
+        content = "foo bar baz"
         uncompressed = BytesIO(content.encode())
         compressed = compress(uncompressed)
 
@@ -114,30 +111,26 @@ class TestCompression(unittest.TestCase):
         self.assertEqual(decompress(compressed).read(), content)
 
     def test_compression_actually_compresses(self):
-        streams = [
-            BytesIO(b'a' * 100),
-            BytesIO(b'a' * 200),
-            BytesIO(b'a' * 400),
-        ]
+        streams = [BytesIO(b"a" * 100), BytesIO(b"a" * 200), BytesIO(b"a" * 400)]
         streams = [compression_ratio(stream) for stream in streams]
 
-        expected = ['4:1', '8:1', '15:1']
+        expected = ["4:1", "8:1", "15:1"]
 
         for act, exp in zip(streams, expected):
             self.assertEqual(act, exp)
 
     def test_unzip_single_valid(self):
-        content = b'a'
-        with open(full_path('test.zip'), 'rb') as stream:
+        content = b"a"
+        with open(full_path("test.zip"), "rb") as stream:
             with UnzipSingle(stream) as actual:
                 self.assertEqual(actual.read(), content)
 
     def test_unzip_single_invalid(self):
-        test = UnzipSingle(open(full_path('invalidzip.zip'), 'rb'))
+        test = UnzipSingle(open(full_path("invalidzip.zip"), "rb"))
         self.assertRaises(ValueError, lambda: test.__enter__())
 
-class TestEqual(unittest.TestCase):
 
+class TestEqual(unittest.TestCase):
     def test_empty(self):
         self.assertRaises(AttributeError, equal, None, None, chunk_size=1)
 
@@ -145,8 +138,8 @@ class TestEqual(unittest.TestCase):
         self.assertEqual(result, True)
 
     def test_equal(self):
-        old = StringIO('hello world')
-        new = StringIO('hello world')
+        old = StringIO("hello world")
+        new = StringIO("hello world")
         expected = True
 
         result = equal(old, new, chunk_size=1)
@@ -155,8 +148,8 @@ class TestEqual(unittest.TestCase):
         self.assertEqual(new.tell(), 0)
 
     def test_unequal(self):
-        old = StringIO('hello world')
-        new = StringIO('HELLO WORLD')
+        old = StringIO("hello world")
+        new = StringIO("HELLO WORLD")
         expected = False
 
         result = equal(old, new, chunk_size=1)
@@ -165,8 +158,8 @@ class TestEqual(unittest.TestCase):
         self.assertEqual(new.tell(), 0)
 
     def test_length_diff(self):
-        longer = StringIO('hello world')
-        shorter = StringIO('hello')
+        longer = StringIO("hello world")
+        shorter = StringIO("hello")
         expected = False
 
         result = equal(longer, shorter, chunk_size=1)
@@ -181,21 +174,18 @@ class TestEqual(unittest.TestCase):
 
 
 class TestEqualSafe(unittest.TestCase):
-
     def test_empty(self):
         out = StringIO()
 
-        self.assertRaises(
-            AttributeError, equal_safe, None, None, out, chunk_size=1,
-        )
+        self.assertRaises(AttributeError, equal_safe, None, None, out, chunk_size=1)
 
         result = equal_safe(StringIO(), StringIO(), out, chunk_size=1)
         self.assertEqual(result, True)
-        self.assertEqual(out.getvalue(), '')
+        self.assertEqual(out.getvalue(), "")
 
     def test_equal(self):
-        old = StringIO('hello world')
-        new = StringIO('hello world')
+        old = StringIO("hello world")
+        new = StringIO("hello world")
         out = StringIO()
         expected = True
 
@@ -204,8 +194,8 @@ class TestEqualSafe(unittest.TestCase):
         self.assertEqual(out.getvalue(), new.getvalue())
 
     def test_unequal(self):
-        old = StringIO('hello world')
-        new = StringIO('HELLO WORLD')
+        old = StringIO("hello world")
+        new = StringIO("HELLO WORLD")
         out = StringIO()
         expected = False
 
@@ -214,8 +204,8 @@ class TestEqualSafe(unittest.TestCase):
         self.assertEqual(out.getvalue(), new.getvalue())
 
     def test_length_diff(self):
-        longer = StringIO('hello world')
-        shorter = StringIO('hello')
+        longer = StringIO("hello world")
+        shorter = StringIO("hello")
         out = StringIO()
         expected = False
 
@@ -233,6 +223,6 @@ class TestEqualSafe(unittest.TestCase):
         self.assertEqual(out.getvalue(), longer.getvalue())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()

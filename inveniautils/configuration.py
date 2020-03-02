@@ -11,7 +11,7 @@ class Manager(object):
 
     def get_configuration(self, name):
         if not isinstance(name, str):
-            raise TypeError('A configuration name must be string')
+            raise TypeError("A configuration name must be string")
 
         if name in self.config_dict:
             config = self.config_dict[name]
@@ -57,12 +57,10 @@ class Configuration(object):
         import yaml
 
         if ignore_missing and not os.path.isfile(file_path):
-            logger.warning(
-                "Ignoring missing configuration file: {}".format(file_path)
-            )
+            logger.warning("Ignoring missing configuration file: {}".format(file_path))
             return
 
-        with open(file_path, 'r') as fp:
+        with open(file_path, "r") as fp:
             self._constants = yaml.safe_load(fp)
             self._loaded = True
 

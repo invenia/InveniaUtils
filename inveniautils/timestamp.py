@@ -6,7 +6,16 @@ from inveniautils.dates import utc
 invalid_timestamp = 2 ** 63 - 1
 
 
-def from_datetime(date):
+def from_datetime(date: datetime) -> int:
+    """
+    Converts a datetime object to a UTC timestamp
+
+    Args:
+        date: A non-naive datetime
+
+    Returns:
+        A UTC timestamp integer
+    """
     if date.tzinfo is None:
         raise TypeError("Expected a non-naive datetime (tzinfo is not set)")
 
@@ -19,7 +28,17 @@ def from_datetime(date):
 MAX_TIMESTAMP = from_datetime(datetime.max.replace(tzinfo=utc))
 
 
-def to_datetime(timestamp):
+def to_datetime(timestamp: int) -> datetime:
+    """
+    Converts a UTC timestamp to a datetime
+
+    Args:
+        timestamp: A UTC timestamp
+
+    Returns:
+        A UTC datetime
+    """
+
     # Note: datetime.max returns the datetime:
     #     datetime.datetime(9999, 12, 31, 23, 59, 59, 999999)
     #

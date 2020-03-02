@@ -8,11 +8,8 @@ def get_version_number():
     #  - module/
     #    - VERSION
     #    - version.py
-    root_dir = Path(__file__).parent
-    version = "-1.-1.-1"
-
-    with (root_dir / "VERSION").open() as version_file:
-        version = version_file.read().strip()
+    version_file = Path(__file__).parent / "VERSION"
+    version = version_file.read_text().strip()
 
     return version
 

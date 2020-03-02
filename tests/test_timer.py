@@ -3,6 +3,7 @@ from inveniautils.timer import Timer, EstimatedTimeToCompletion
 from random import randint
 from datetime import timedelta
 
+
 class TestTimer(unittest.TestCase):
     def test_timer_automatically_starts_in_with(self):
         with Timer(timer=MockTimer()) as t:
@@ -70,7 +71,7 @@ class TestTimer(unittest.TestCase):
             timedelta(seconds=10),
             timedelta(seconds=9),
             timedelta(seconds=7),
-            timedelta(seconds=4)
+            timedelta(seconds=4),
         ]
         for i in range(10):
             list.append(estimator.report())
@@ -81,6 +82,7 @@ class TestTimer(unittest.TestCase):
 
         estimator.reset()
         self.assertEqual(estimator.elapsed, timedelta(0))
+
 
 class MockTimer(object):
     def __init__(self):

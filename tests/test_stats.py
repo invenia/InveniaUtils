@@ -45,9 +45,7 @@ class TestInstanceAnaylsis(unittest.TestCase):
         self.assertEqual(step, expected_step)
 
     def test_single(self):
-        target_dates = [
-            datetime(2010, 1, 1),
-        ]
+        target_dates = [datetime(2010, 1, 1)]
         expected_start = datetime(2010, 1, 1)
         expected_end = datetime(2010, 1, 1)
         expected_step = timedelta(0)
@@ -145,9 +143,7 @@ class TestRangeAnalysis(unittest.TestCase):
         self.assertEqual(step, expected_step)
 
     def test_single(self):
-        ranges = [
-            DatetimeRange(datetime(2010, 1, 1), datetime(2011, 1, 1)),
-        ]
+        ranges = [DatetimeRange(datetime(2010, 1, 1), datetime(2011, 1, 1))]
         expected_start = datetime(2010, 1, 1)
         expected_end = datetime(2011, 1, 1)
         expected_step = timedelta(days=365)
@@ -173,9 +169,7 @@ class TestRangeAnalysis(unittest.TestCase):
         self.assertEqual(step, expected_step)
 
     def test_infinite_range(self):
-        ranges = [
-            DatetimeRange(datetime(2010, 1, 1), None),
-        ]
+        ranges = [DatetimeRange(datetime(2010, 1, 1), None)]
         expected_start = datetime(2010, 1, 1)
         expected_end = None
         expected_step = None
@@ -218,9 +212,7 @@ class TestRangePairAnalysis(unittest.TestCase):
         self.assertEqual(step, expected_step)
 
     def test_single(self):
-        ranges = [
-            (datetime(2010, 1, 1), datetime(2011, 1, 1)),
-        ]
+        ranges = [(datetime(2010, 1, 1), datetime(2011, 1, 1))]
         expected_start = datetime(2010, 1, 1)
         expected_end = datetime(2011, 1, 1)
         expected_step = timedelta(days=365)
@@ -248,11 +240,7 @@ class TestRangePairAnalysis(unittest.TestCase):
 
 class TestBestDelta(unittest.TestCase):
     def test_basic(self):
-        sample = [
-            timedelta(minutes=5),
-            timedelta(minutes=10),
-            timedelta(minutes=5),
-        ]
+        sample = [timedelta(minutes=5), timedelta(minutes=10), timedelta(minutes=5)]
         self.assertEqual(best_delta(sample), timedelta(minutes=5))
 
     def test_ambiguous(self):
@@ -263,16 +251,9 @@ class TestBestDelta(unittest.TestCase):
         self.assertEqual(best_delta(sample), timedelta(minutes=0))
 
     def test_interval(self):
-        sample = [
-            timedelta(minutes=55),
-            timedelta(minutes=59),
-            timedelta(minutes=120),
-        ]
+        sample = [timedelta(minutes=55), timedelta(minutes=59), timedelta(minutes=120)]
 
-        self.assertEqual(
-            best_delta(sample, timedelta(hours=1)),
-            timedelta(hours=1),
-        )
+        self.assertEqual(best_delta(sample, timedelta(hours=1)), timedelta(hours=1))
 
     def test_real(self):
         sample = [
@@ -285,19 +266,14 @@ class TestBestDelta(unittest.TestCase):
             timedelta(hours=6, minutes=35),
         ]
 
+        self.assertEqual(best_delta(sample, timedelta(hours=1)), timedelta(hours=5))
+
         self.assertEqual(
-            best_delta(sample, timedelta(hours=1)),
-            timedelta(hours=5),
+            best_delta(sample, timedelta(hours=1), tolerance=1.0), timedelta(hours=5)
         )
 
         self.assertEqual(
-            best_delta(sample, timedelta(hours=1), tolerance=1.0),
-            timedelta(hours=5),
-        )
-
-        self.assertEqual(
-            best_delta(sample, timedelta(hours=1), tolerance=0.5),
-            timedelta(hours=4),
+            best_delta(sample, timedelta(hours=1), tolerance=0.5), timedelta(hours=4)
         )
 
     def test_real_neg(self):
@@ -311,19 +287,14 @@ class TestBestDelta(unittest.TestCase):
             -timedelta(hours=6, minutes=35),
         ]
 
+        self.assertEqual(best_delta(sample, timedelta(hours=1)), -timedelta(hours=5))
+
         self.assertEqual(
-            best_delta(sample, timedelta(hours=1)),
-            -timedelta(hours=5),
+            best_delta(sample, timedelta(hours=1), tolerance=1.0), -timedelta(hours=5)
         )
 
         self.assertEqual(
-            best_delta(sample, timedelta(hours=1), tolerance=1.0),
-            -timedelta(hours=5),
-        )
-
-        self.assertEqual(
-            best_delta(sample, timedelta(hours=1), tolerance=0.5),
-            -timedelta(hours=4),
+            best_delta(sample, timedelta(hours=1), tolerance=0.5), -timedelta(hours=4)
         )
 
 
@@ -347,9 +318,7 @@ class TestReleaseEstimates(unittest.TestCase):
         expected_content_interval = timedelta(days=1)
         expected_content_offset = timedelta(days=2)
 
-        r = release_estimations(
-            modified_dates, content_end_dates, timedelta(minutes=5),
-        )
+        r = release_estimations(modified_dates, content_end_dates, timedelta(minutes=5))
         publish_interval, publish_offset, content_interval, content_offset = r
 
         self.assertEqual(publish_interval, expected_publish_interval)
@@ -382,11 +351,11 @@ class TestReleaseEstimates(unittest.TestCase):
             timedelta(days=7),  # Would be 7 days, 1 hour over fall DST
         )
         result = release_estimations(
-            modified_dates, content_end_dates, timedelta(minutes=5),
+            modified_dates, content_end_dates, timedelta(minutes=5)
         )
         self.assertEqual(result, expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()

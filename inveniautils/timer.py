@@ -75,6 +75,7 @@ class EstimatedTimeToCompletion(object):
     @classmethod
     def test(cls, iterations=120, interval=0.1, timer=None):
         import time
+
         if not timer:
             timer = time
 
@@ -90,12 +91,12 @@ class EstimatedTimeToCompletion(object):
         self.elapsed = timedelta(0)
 
     def display(self, text):
-        whitespace = ' ' * (self.last_display_length - len(text))
+        whitespace = " " * (self.last_display_length - len(text))
 
-        sys.stdout.write('\r{}{}'.format(text, whitespace))
+        sys.stdout.write("\r{}{}".format(text, whitespace))
         sys.stdout.flush()
 
-        self.last_display_length = len(text) - text.rfind('\n') - 1
+        self.last_display_length = len(text) - text.rfind("\n") - 1
 
     def report(self, current_iteration=None):
         now = self.timer.time()
@@ -107,17 +108,10 @@ class EstimatedTimeToCompletion(object):
         if self.timestamp:
             self.elapsed += timedelta(seconds=now - self.timestamp)
             time_per_iteration = self.elapsed // self.current_iteration
-            remaining_iterations = (
-                self.total_iterations - self.current_iteration
-            )
+            remaining_iterations = self.total_iterations - self.current_iteration
             estimate = time_per_iteration * remaining_iterations
 
-            self.display(
-                'Remaining time {} {}'.format(
-                    estimate,
-                    remaining_iterations,
-                )
-            )
+            self.display("Remaining time {} {}".format(estimate, remaining_iterations))
 
         # Bump current iteration if no iteration value is given.
         if current_iteration is None:
@@ -129,10 +123,7 @@ class EstimatedTimeToCompletion(object):
 
     def final_report(self):
         self.display(
-            'Total runtime {} {}\n'.format(
-                self.elapsed,
-                self.total_iterations,
-            )
+            "Total runtime {} {}\n".format(self.elapsed, self.total_iterations)
         )
 
         return self.elapsed

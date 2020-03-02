@@ -10,15 +10,15 @@ from io import SEEK_END, BytesIO, StringIO
 DEFAULT_SIZE = 262144  # 256KB in bytes.
 
 
-def compress(stream, method='gzip', chunk_size=DEFAULT_SIZE):
+def compress(stream, method="gzip", chunk_size=DEFAULT_SIZE):
     """
     Compress a stream
     """
     with AutoRewind(stream) as stream:
-        if method == 'gzip':
+        if method == "gzip":
             compressed = BytesIO()
 
-            with GzipFile(fileobj=compressed, mode='w') as temp:
+            with GzipFile(fileobj=compressed, mode="w") as temp:
                 # Compress in chunks as zlib can compress via chunks.
                 copy(stream, temp, chunk_size)
 
@@ -29,17 +29,17 @@ def compress(stream, method='gzip', chunk_size=DEFAULT_SIZE):
     return compressed
 
 
-def decompress(stream, method='gzip', chunk_size=DEFAULT_SIZE):
+def decompress(stream, method="gzip", chunk_size=DEFAULT_SIZE):
     """
     Decompress a stream
     """
     with AutoRewind(stream) as stream:
-        if method == 'gzip':
+        if method == "gzip":
             decompressed = StringIO()
 
             # Copy stream to ensure we can read the content once
             # the gzip has been closed.
-            with GzipFile(fileobj=stream, mode='r') as temp:
+            with GzipFile(fileobj=stream, mode="r") as temp:
                 copy(temp, decompressed, chunk_size)
 
             decompressed.seek(0)
@@ -49,7 +49,7 @@ def decompress(stream, method='gzip', chunk_size=DEFAULT_SIZE):
     return decompressed
 
 
-def compression_ratio(stream, method='gzip', chunk_size=DEFAULT_SIZE):
+def compression_ratio(stream, method="gzip", chunk_size=DEFAULT_SIZE):
     """
     Helper method which returns the uncompressed versus compressed size.
     """
@@ -164,7 +164,7 @@ class UnzipSingle(object):
         self.original_position = None
 
     def __enter__(self):
-        self.zip_file = zipfile.ZipFile(self.stream, 'r')
+        self.zip_file = zipfile.ZipFile(self.stream, "r")
         zipped_files = self.zip_file.namelist()
 
         if len(zipped_files) > 1:

@@ -7,12 +7,7 @@ from inveniautils.timestamp import to_datetime
 from datetime import datetime, timedelta
 from io import StringIO
 
-BOUNDS = {
-    (0, 0): 0,
-    (1, 0): 1,
-    (0, 1): 2,
-    (1, 1): 3,
-}
+BOUNDS = {(0, 0): 0, (1, 0): 1, (0, 1): 2, (1, 1): 3}
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +43,9 @@ class NormalizedWriter(object):
         # Split target_range to start, end and bound fields
         target_range = row.pop("target_range")
 
-        row['target_start'] = target_range.start
-        row['target_end'] = target_range.end
-        row['target_bounds'] = BOUNDS[target_range.bounds]
+        row["target_start"] = target_range.start
+        row["target_end"] = target_range.end
+        row["target_bounds"] = BOUNDS[target_range.bounds]
 
         return row
 
@@ -77,9 +72,7 @@ class NormalizedWriter(object):
         else:
             raise TypeError(
                 "Parsed type {} detected. Only date, numeric, string-types"
-                " tuples of strings, and 'None' are supported".format(
-                    type(value)
-                )
+                " tuples of strings, and 'None' are supported".format(type(value))
             )
         return result
 
@@ -110,9 +103,7 @@ class NormalizedWriter(object):
             else:
                 raise TypeError(
                     "Unable to decode '{}'. Only date, numeric, string-types"
-                    " tuples of strings, and 'None' are supported".format(
-                        value_type
-                    )
+                    " tuples of strings, and 'None' are supported".format(value_type)
                 )
         else:
             result = None

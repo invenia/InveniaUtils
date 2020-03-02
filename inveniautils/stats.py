@@ -108,12 +108,18 @@ def best_delta(sample, interval=timedelta(0), tolerance=None):
     # Prefer smaller deltas (towards zero) when the count isn't substantially
     # different. Note: Python 3 division.
     delta = best_delta
-    if best_delta is not None and tolerance is not None and interval != timedelta(0):  # noqa: E501
+    if (
+        best_delta is not None and tolerance is not None and interval != timedelta(0)
+    ):  # noqa: E501
         if best_delta < timedelta(0):
-            while count.get(delta + interval, 0) / count[best_delta] >= tolerance:  # noqa: E501
+            while (
+                count.get(delta + interval, 0) / count[best_delta] >= tolerance
+            ):  # noqa: E501
                 delta += interval
         else:
-            while count.get(delta - interval, 0) / count[best_delta] >= tolerance:  # noqa: E501
+            while (
+                count.get(delta - interval, 0) / count[best_delta] >= tolerance
+            ):  # noqa: E501
                 delta -= interval
 
     return delta
@@ -180,6 +186,6 @@ def release_estimations(release_dates, content_end_dates, tolerance):
     publish_offset = compute_offset(release_dates, publish_interval, tolerance)
     content_interval = compute_interval(content_end_dates, tolerance)
     content_offset = compute_content_offset(
-        release_dates, content_end_dates, content_interval, tolerance,
+        release_dates, content_end_dates, content_interval, tolerance
     )
     return publish_interval, publish_offset, content_interval, content_offset

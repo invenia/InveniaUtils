@@ -20,7 +20,7 @@ def xml_remove_formatting(content):
     try:
         import lxml.etree
     except ImportError:
-        logger.warning('Unable to remove formatting from XML without lxml.')
+        logger.warning("Unable to remove formatting from XML without lxml.")
 
     # http://stackoverflow.com/a/3317008/1488853
     # http://lxml.de/parsing.html#parsers

@@ -7,15 +7,19 @@ from inveniautils.datetime_range import DatetimeRange
 class Repetition(object):
     NATURAL = 0  # Output is not modified.
     PERSIST = 1  # Fall back to previous available occurrence.
-    LAST = 2     # Only keep the last occurrence in all streams.
+    LAST = 2  # Only keep the last occurrence in all streams.
     # FIRST = 3    # Only keep the first occurrence in all streams.
 
 
 # Works similarily to heapq.merge.
 # http://docs.python.org/2/library/heapq.html#heapq.merge
 def layered(
-    iterables, cmp=cmp, blend=None, transform=None,
-    repetition=Repetition.LAST, debug=False,
+    iterables,
+    cmp=cmp,
+    blend=None,
+    transform=None,
+    repetition=Repetition.LAST,
+    debug=False,
 ):
     """Combines multiple sorted iterables into a single iterator.
     Expects all iterables to be all ordered in the same way.
@@ -41,10 +45,10 @@ def layered(
     # Differentiates None from non-existent.
     null = object()
 
-    element = {}       # The latest yielded value from each iterator.
+    element = {}  # The latest yielded value from each iterator.
     prev_element = {}  # The values that were previously contained in element.
-    compound = {}      # Values to be blended.
-    equivalent = []    # Identifies the earliest equal values within element.
+    compound = {}  # Values to be blended.
+    equivalent = []  # Identifies the earliest equal values within element.
 
     # Keep track of the original ordering of the iterators.
     ordering = list(iterators)
@@ -71,16 +75,13 @@ def layered(
                 if debug:
                     print(
                         "skip   {} {}".format(
-                            ordering.index(iterator), element[iterator],
+                            ordering.index(iterator), element[iterator]
                         )
                     )
                 continue
 
             if equivalent:
-                comparison = cmp(
-                    element[iterator],
-                    element[equivalent[0]],
-                )
+                comparison = cmp(element[iterator], element[equivalent[0]])
             else:
                 comparison = -1  # Force initialize equivalent.
 
@@ -93,7 +94,7 @@ def layered(
                 if debug:
                     print(
                         "assign {} {}".format(
-                            ordering.index(iterator), element[iterator],
+                            ordering.index(iterator), element[iterator]
                         )
                     )
 
@@ -104,14 +105,14 @@ def layered(
                 if debug:
                     print(
                         "append {} {}".format(
-                            ordering.index(iterator), element[iterator],
+                            ordering.index(iterator), element[iterator]
                         )
                     )
             else:
                 if debug:
                     print(
                         "ignore {} {}".format(
-                            ordering.index(iterator), element[iterator],
+                            ordering.index(iterator), element[iterator]
                         )
                     )
 
@@ -126,10 +127,7 @@ def layered(
         unite = False
         if compound and equivalent:
             # Equivalent elements are also equal to the compound.
-            unite = cmp(
-                next(iter(compound.values())),
-                element[equivalent[0]],
-            ) == 0
+            unite = cmp(next(iter(compound.values())), element[equivalent[0]]) == 0
 
         # Forces initialization of compound.
         elif not compound:
@@ -150,7 +148,7 @@ def layered(
             if debug:
                 print(
                     "compound united {}".format(
-                        [compound[i] for i in ordering if i in compound],
+                        [compound[i] for i in ordering if i in compound]
                     )
                 )
 
@@ -178,7 +176,7 @@ def layered(
                     if debug:
                         print(
                             "persist {} {}".format(
-                                ordering.index(iterator), compound[iterator],
+                                ordering.index(iterator), compound[iterator]
                             )
                         )
 
@@ -202,18 +200,14 @@ def layered(
                     if debug:
                         print(
                             "blend start {} {}".format(
-                                ordering.index(iterator), combined,
+                                ordering.index(iterator), combined
                             )
                         )
                 else:
                     combined = blend(combined, component)
 
                     if debug:
-                        print(
-                            "blend {} {}".format(
-                                ordering.index(iterator), combined,
-                            )
-                        )
+                        print("blend {} {}".format(ordering.index(iterator), combined))
             else:
                 if combined is null:
                     combined = [component]
@@ -230,8 +224,13 @@ def layered(
 # itertools.groupby works in a similar fashion:
 # http://docs.python.org/2/library/itertools.html#itertools.groupby
 def aggregate(
-    iterable, keys=None, aggregator=None, relevant=None, complete=None,
-    relevancy_check=64, debug=False,
+    iterable,
+    keys=None,
+    aggregator=None,
+    relevant=None,
+    complete=None,
+    relevancy_check=64,
+    debug=False,
 ):
     """
     Aggregates the contents of an iterable. Works best if the iterable
@@ -371,7 +370,7 @@ def aggregate(
             # added to the cache.
             if complete is not None and complete(k, cache[k]):
                 if debug:
-                    print('Complete {}'.format(k))
+                    print("Complete {}".format(k))
                 aggregates = aggregator(k, cache.pop(k))
 
                 for aggregate in aggregates:
@@ -390,9 +389,7 @@ class UnorderedError(Exception):
     pass
 
 
-def ensure_ordering(
-    iterable, key=lambda k: k, cmp=cmp, unique=False, msg="",
-):
+def ensure_ordering(iterable, key=lambda k: k, cmp=cmp, unique=False, msg=""):
     iterable = iter(iterable)
     try:
         element = next(iterable)
@@ -421,11 +418,7 @@ def ensure_ordering(
                     "Previous Key: {}\n"
                     "Current Key:  {}"
                 ).format(
-                    msg,
-                    previous_element,
-                    element,
-                    previous_element_key,
-                    element_key,
+                    msg, previous_element, element, previous_element_key, element_key
                 )
             )
         elif unique and comparison == 0:
@@ -438,11 +431,7 @@ def ensure_ordering(
                     "Previous Key: {}\n"
                     "Current Key:  {}"
                 ).format(
-                    msg,
-                    previous_element,
-                    element,
-                    previous_element_key,
-                    element_key,
+                    msg, previous_element, element, previous_element_key, element_key
                 )
             )
 
@@ -462,10 +451,7 @@ def ensure_keys(iterable, expected, key=lambda k: k):
                     "Element key does not match expected:\n"
                     "Element:  {}\n"
                     "Expected: {}"
-                ).format(
-                    element_key,
-                    expected,
-                )
+                ).format(element_key, expected)
             )
 
 

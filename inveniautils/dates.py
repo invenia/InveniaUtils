@@ -1,11 +1,11 @@
 import calendar
-import collections
 import regex
 import pytz
 
+from collections.abc import Iterable
 from datetime import datetime, timedelta
-from inveniautils.mathutil import RoundingMode, round_to
 from dateutil.parser import parse as dateutil_parse
+from inveniautils.mathutil import RoundingMode, round_to
 from pytz import utc
 
 
@@ -18,7 +18,7 @@ def localize(dt, tz, is_dst=None):
     if dt.tzinfo is not None:
         raise ValueError("Not naive datetime (tzinfo is already set)")
 
-    if hasattr(tz, 'localize'):
+    if hasattr(tz, "localize"):
         # By default if you don't specify the is_dst flag the localize
         # method will guess the timezone offset during ambiguous or
         # non-existent times.
@@ -78,7 +78,7 @@ def normalize(dt):
     else:
         raise ValueError("Naive datetime cannot be normalized")
 
-    if hasattr(tz, 'normalize'):
+    if hasattr(tz, "normalize"):
         normalized = tz.normalize(dt)
     else:
         normalized = dt.astimezone(tz)
@@ -93,25 +93,24 @@ def timezone_transitions(timezone, year=None):
     # some timezones include datetime(1, 1, 1) as a transition.
     first_implemented_year = 1916
 
-    if hasattr(timezone, '_utc_transition_times'):
+    if hasattr(timezone, "_utc_transition_times"):
         transitions = (
             localize(dt, utc).astimezone(timezone)
             for dt in timezone._utc_transition_times
-            if year is None and dt.year >= first_implemented_year or
-            year is not None and dt.year == year
+            if year is None
+            and dt.year >= first_implemented_year
+            or year is not None
+            and dt.year == year
         )
 
-    elif hasattr(timezone, '_trans_list'):
+    elif hasattr(timezone, "_trans_list"):
         transitions = (
             datetime.fromtimestamp(t, utc).replace(tzinfo=timezone)
             for t in timezone._trans_list
         )
 
         if year is not None:
-            transitions = (
-                dt for dt in transitions
-                if dt.year == year
-            )
+            transitions = (dt for dt in transitions if dt.year == year)
 
     else:
         raise TypeError("Timezone does not contain any transition information")
@@ -126,7 +125,7 @@ def split(dates, pivot):
     """
     from .datetime_range import DatetimeRange, Bound
 
-    if not isinstance(dates, collections.Iterable):
+    if not isinstance(dates, Iterable):
         dates = [dates]
 
     before = []
@@ -140,14 +139,10 @@ def split(dates, pivot):
                 after.append(d)
             else:
                 before.append(
-                    DatetimeRange(
-                        d.start, pivot, (d.start_bound, Bound.EXCLUSIVE),
-                    )
+                    DatetimeRange(d.start, pivot, (d.start_bound, Bound.EXCLUSIVE))
                 )
                 after.append(
-                    DatetimeRange(
-                        pivot, d.end, (Bound.INCLUSIVE, d.end_bound),
-                    )
+                    DatetimeRange(pivot, d.end, (Bound.INCLUSIVE, d.end_bound))
                 )
 
         else:
@@ -181,66 +176,38 @@ def format_to_regex(format):
     # Note: We could make the regex's filter out things like 99
     # months but this would make the behaviours harder to test.
     translation = {
-        'Y': {
-            'group': 'year',
-            'expr': r'\d{4}',
-            'digits': [4],
-        },
-        'm': {
-            'group': 'month',
-            'expr': r'\d{1,2}+',
-            'digits': [1, 2],
-        },
-        'd': {
-            'group': 'day',
-            'expr': r'\d{1,2}+',
-            'digits': [1, 2],
-        },
-        'H': {
-            'group': 'hour',
-            'expr': r'\d{1,2}+',
-            'digits': [1, 2],
-        },
-        'M': {
-            'group': 'minute',
-            'expr': r'\d{1,2}+',
-            'digits': [1, 2],
-        },
-        'S': {
-            'group': 'second',
-            'expr': r'\d{1,2}+',
-            'digits': [1, 2],
-        },
-        'f': {
-            'group': 'microsecond',
-            'expr': r'\d{1,6}+',
-            'digits': range(1, 7),
-        },
+        "Y": {"group": "year", "expr": r"\d{4}", "digits": [4]},
+        "m": {"group": "month", "expr": r"\d{1,2}+", "digits": [1, 2]},
+        "d": {"group": "day", "expr": r"\d{1,2}+", "digits": [1, 2]},
+        "H": {"group": "hour", "expr": r"\d{1,2}+", "digits": [1, 2]},
+        "M": {"group": "minute", "expr": r"\d{1,2}+", "digits": [1, 2]},
+        "S": {"group": "second", "expr": r"\d{1,2}+", "digits": [1, 2]},
+        "f": {"group": "microsecond", "expr": r"\d{1,6}+", "digits": range(1, 7)},
     }
-    directive = regex.compile(r'\%(?P<digits>\d+)?(?P<key>[YmdHMSf])')
+    directive = regex.compile(r"\%(?P<digits>\d+)?(?P<key>[YmdHMSf])")
 
     result = format
     for m in regex.finditer(directive, format):
-        key = m.group('key')
-        group_name = translation[key]['group']
+        key = m.group("key")
+        group_name = translation[key]["group"]
 
         # Allow the user to explicitly set the expected number of digits.
-        if m.group('digits'):
-            digits = int(m.group('digits'))
+        if m.group("digits"):
+            digits = int(m.group("digits"))
 
-            if digits in translation[key]['digits']:
-                replacement = r'\d{{{}}}'.format(digits)
+            if digits in translation[key]["digits"]:
+                replacement = r"\d{{{}}}".format(digits)
             else:
                 raise ValueError(
-                    "Number of digits {} is unsupported by directive %{}.".
-                    format(digits, key)
+                    "Number of digits {} is unsupported by directive %{}.".format(
+                        digits, key
+                    )
                 )
         else:
-            replacement = translation[key]['expr']
+            replacement = translation[key]["expr"]
 
         result = result.replace(
-            m.group(0),
-            "(?P<{}>{})".format(group_name, replacement),
+            m.group(0), "(?P<{}>{})".format(group_name, replacement)
         )
 
     return regex.compile(result)
@@ -250,13 +217,11 @@ def datetime_extract(string, regexp):
     m = regex.search(regexp, string)
 
     if not m:
-        raise ValueError(
-            "Unable to extract datetime from '{}'".format(string)
-        )
+        raise ValueError("Unable to extract datetime from '{}'".format(string))
 
     d = m.groupdict()
-    if isinstance(d.get('microsecond'), str):
-        d['microsecond'] += '0' * (6 - len(d['microsecond']))
+    if isinstance(d.get("microsecond"), str):
+        d["microsecond"] += "0" * (6 - len(d["microsecond"]))
 
     values = {k: int(v) for k, v in d.items() if v is not None}
     return datetime(**values)
@@ -279,7 +244,7 @@ def round_datetime(dt=None, interval=timedelta(0), floor=False, ceil=False):
 
     tz = dt.tzinfo
 
-    if hasattr(interval, 'total_seconds'):
+    if hasattr(interval, "total_seconds"):
         interval = interval.total_seconds()
 
         # Abort early if there is nothing to round to.
@@ -293,7 +258,7 @@ def round_datetime(dt=None, interval=timedelta(0), floor=False, ceil=False):
             # Corrects badly created datetimes.
             # Alternatively convert to a fixed timezone then back:
             # dt = dt.astimezone(utc).astimezone(tz)
-            if hasattr(tz, 'normalize'):
+            if hasattr(tz, "normalize"):
                 dt = tz.normalize(dt)
 
             offset = dt.utcoffset().total_seconds()
@@ -378,11 +343,7 @@ def round_timedelta(delta, interval, mode=RoundingMode.NEAREST_TIES_FROM_ZERO):
     mode: modifies the behaviour of how the timedelta is rounded
     """
     return timedelta(
-        seconds=round_to(
-            delta.total_seconds(),
-            interval.total_seconds(),
-            mode,
-        )
+        seconds=round_to(delta.total_seconds(), interval.total_seconds(), mode)
     )
 
 
@@ -396,10 +357,9 @@ def estimate_latest_release(
     """
     return relocalize(
         round_datetime(
-            now - publish_offset - datafeed_runtime,
-            publish_interval,
-            floor=True,
-        ) + publish_offset
+            now - publish_offset - datafeed_runtime, publish_interval, floor=True
+        )
+        + publish_offset
     )
 
 
@@ -409,11 +369,7 @@ def estimate_content_end(release_date, content_interval, content_offset):
     and offset.
     """
     return relocalize(
-        round_datetime(
-            release_date,
-            content_interval,
-            floor=True,
-        ) + content_offset
+        round_datetime(release_date, content_interval, floor=True) + content_offset
     )
 
 
@@ -438,7 +394,7 @@ def contains(dates, date):
     if dates is None:
         dates = []
 
-    if not isinstance(dates, collections.Iterable):
+    if not isinstance(dates, Iterable):
         dates = [dates]
 
     for d in dates:

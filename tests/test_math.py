@@ -382,6 +382,7 @@ class TestRoundTo(unittest.TestCase):
         self.assertEqual(round_to(59, 60, mode), 60)
         self.assertEqual(round_to(-59, 60, mode), -60)
 
+
 class TestMathFuncs(unittest.TestCase):
     def test_mean(self):
         nums = [3, 5, 7, 8, 12]
@@ -394,11 +395,13 @@ class TestMathFuncs(unittest.TestCase):
         self.assertEqual(mathutil.weighted_mean(nums, weights), 9)
 
     def test_mean_radians(self):
-        nums = [0, math.pi/2, math.pi]
+        nums = [0, math.pi / 2, math.pi]
 
         for i in range(1, 100):
             weights = [i, 999999, i]
-            self.assertEqual(mathutil.angle_mean_radians(nums, weights=weights), math.pi/2)
+            self.assertEqual(
+                mathutil.angle_mean_radians(nums, weights=weights), math.pi / 2
+            )
 
     def test_mean_degrees(self):
         nums = [0, 90, 180]
@@ -408,6 +411,6 @@ class TestMathFuncs(unittest.TestCase):
             self.assertEqual(mathutil.angle_mean_degrees(nums, weights=weights), 90)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()

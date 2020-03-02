@@ -23,9 +23,9 @@ class TestRequestEncoder(unittest.TestCase):
         result = json.dumps(dictionary, cls=RequestEncoder)
 
         expected = (
-            '{"testThing": "blah", ' +
-            '"dt": {"_type": "datetime", "value": "%s"}, ' % dt.isoformat() +
-            '"otherThing": 50}'
+            '{"testThing": "blah", '
+            + '"dt": {"_type": "datetime", "value": "%s"}, ' % dt.isoformat()
+            + '"otherThing": 50}'
         )
 
         self.assertEqual(result, expected)
@@ -55,17 +55,13 @@ class TestRequestDecoder(unittest.TestCase):
     def test_in_dict(self):
         dt = datetime(2014, 3, 7, 3)
         encoded = (
-            '{"otherThing": 50, "testThing": "blah", ' +
-            '"dt": {"_type": "datetime", "value": "%s"}}' % dt.isoformat()
+            '{"otherThing": 50, "testThing": "blah", '
+            + '"dt": {"_type": "datetime", "value": "%s"}}' % dt.isoformat()
         )
 
         result = json.loads(encoded, cls=RequestDecoder)
 
-        expected = {
-            "testThing": "blah",
-            "dt": dt,
-            "otherThing": 50
-        }
+        expected = {"testThing": "blah", "dt": dt, "otherThing": 50}
 
         self.assertEqual(result, expected)
 
