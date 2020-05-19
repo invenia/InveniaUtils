@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 import re
+from typing import Any, Tuple, Union
+import warnings
 
 from collections.abc import Iterable
 from datetime import datetime, timedelta
@@ -108,6 +112,17 @@ def start_before_key(dtr):
     return (dtr.start, dtr.start_bound == Bound.EXCLUSIVE)
 
 
+def sort_key(dtr: DatetimeRange) -> Tuple[int, bool, int, bool]:
+    # start and end bounds are inverted because an inclusive start
+    # starts first and an exclusive end ends first.
+    return (
+        dtr.start,
+        dtr.start_bound == Bound.EXCLUSIVE,
+        dtr.end,
+        dtr.end_bound == Bound.INCLUSIVE,
+    )
+
+
 def period_ending_as_range(dt, period):
     """
     Converts a implicit period-ending datetime and converts it into an
@@ -126,15 +141,43 @@ def period_beginning_as_range(dt, period):
     return DatetimeRange(dt, normalize(dt + period), (Bound.INCLUSIVE, Bound.EXCLUSIVE))
 
 
-# Compare two DatetimeRange objects.
-# Range a is considered to be less than b if it starts before b.
-# If a and b have the same start date, compare their end dates.
-def cmp_ranges(a, b):
+# We're deprecating this because cmp is gone in Python3 and also because
+# the non-datetime range option here is a reach. Also, that type should
+# technically be Tuple[DatetimeRange, Any...], but mypy doesn't
+# understand that.
+def cmp_ranges(
+    a: Union[DatetimeRange, Tuple[Any, ...]], b: Union[DatetimeRange, Tuple[Any, ...]]
+) -> int:
+    """
+    Compare two DatetimeRanges (or tuples where the first element is a
+    DatetimeRange).
+
+    a < b if a starts before b or they start at the same time and a ends
+    first.
+    """
+    warnings.warn(
+        (
+            "This method will be deprecated in inveniautils 0.4.0. "
+            "Use key=full_key when sorting."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     if isinstance(a, tuple) and isinstance(b, tuple):
         # The sort key for outages is a tuple starting with
         # target_range rather than just the range itself.
         if isinstance(a[0], DatetimeRange) and isinstance(b[0], DatetimeRange):
-            return cmp_ranges(a[0], b[0])
+            result = cmp_ranges(a[0], b[0])
+
+            if result != 0:
+                return result
+            elif a[1:] < b[1:]:
+                return -1
+            elif a[1:] == b[1:]:
+                return 0
+            else:
+                return 1
         else:
             raise TypeError(
                 "First element of an operand was not a date"
@@ -150,7 +193,7 @@ def cmp_ranges(a, b):
     else:
         raise TypeError(
             "Operands must both be date ranges or tuples with"
-            " date ranges as their first element:\na={}\nb={}".format(a, b)
+            f" date ranges as their first element:\na={a}\nb={b}"
         )
 
 
