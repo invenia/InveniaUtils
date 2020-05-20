@@ -11,6 +11,7 @@ from inveniautils.datetime_range import (
     DatetimeRange,
     POS_INF_DATETIME,
     start_before_key,
+    sort_key,
     period_ending_as_range,
     period_beginning_as_range,
     cmp_ranges,
@@ -1160,7 +1161,7 @@ class TestDatetimeRange(unittest.TestCase):
 
     def test_containing(self):
         """
-        Creation of dateime range via containing.
+        Creation of datetime range via containing.
 
         Visualization of the test range used:
 
@@ -1364,6 +1365,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertTrue(start_before_key(earlier) < start_before_key(later))
         self.assertFalse(start_before_key(later) < start_before_key(earlier))
+        self.assertTrue(sort_key(earlier) < sort_key(later))
+        self.assertFalse(sort_key(later) < sort_key(earlier))
 
         with self.assertRaises(NotImplementedError):
             earlier < later
@@ -1431,6 +1434,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertTrue(start_before_key(earlier) < start_before_key(later))
         self.assertFalse(start_before_key(later) < start_before_key(earlier))
+        self.assertTrue(sort_key(earlier) < sort_key(later))
+        self.assertFalse(sort_key(later) < sort_key(earlier))
 
         with self.assertRaises(NotImplementedError):
             earlier < later
@@ -1498,6 +1503,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertTrue(start_before_key(earlier) < start_before_key(later))
         self.assertFalse(start_before_key(later) < start_before_key(earlier))
+        self.assertTrue(sort_key(earlier) < sort_key(later))
+        self.assertFalse(sort_key(later) < sort_key(earlier))
 
         with self.assertRaises(NotImplementedError):
             earlier < later
@@ -1565,6 +1572,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertTrue(start_before_key(earlier) < start_before_key(later))
         self.assertFalse(start_before_key(later) < start_before_key(earlier))
+        self.assertTrue(sort_key(earlier) < sort_key(later))
+        self.assertFalse(sort_key(later) < sort_key(earlier))
 
         with self.assertRaises(NotImplementedError):
             earlier < later
@@ -1632,6 +1641,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertTrue(start_before_key(earlier) < start_before_key(later))
         self.assertFalse(start_before_key(later) < start_before_key(earlier))
+        self.assertTrue(sort_key(earlier) < sort_key(later))
+        self.assertFalse(sort_key(later) < sort_key(earlier))
 
         with self.assertRaises(NotImplementedError):
             earlier < later
@@ -1696,6 +1707,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertTrue(start_before_key(earlier) < start_before_key(later))
         self.assertFalse(start_before_key(later) < start_before_key(earlier))
+        self.assertTrue(sort_key(earlier) < sort_key(later))
+        self.assertFalse(sort_key(later) < sort_key(earlier))
 
         with self.assertRaises(NotImplementedError):
             earlier < later
@@ -1762,6 +1775,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertFalse(start_before_key(a) < start_before_key(b))
         self.assertFalse(start_before_key(b) < start_before_key(a))
+        self.assertFalse(sort_key(a) < sort_key(b))
+        self.assertFalse(sort_key(b) < sort_key(a))
 
         with self.assertRaises(NotImplementedError):
             a < b
@@ -1832,6 +1847,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertTrue(start_before_key(a) < start_before_key(b))
         self.assertFalse(start_before_key(b) < start_before_key(a))
+        self.assertTrue(sort_key(a) < sort_key(b))
+        self.assertFalse(sort_key(b) < sort_key(a))
 
         with self.assertRaises(NotImplementedError):
             a < b
@@ -1902,6 +1919,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertFalse(start_before_key(a) < start_before_key(b))
         self.assertFalse(start_before_key(b) < start_before_key(a))
+        self.assertFalse(sort_key(a) < sort_key(b))
+        self.assertTrue(sort_key(b) < sort_key(a))
 
         with self.assertRaises(NotImplementedError):
             a < b
@@ -1972,6 +1991,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertTrue(start_before_key(a) < start_before_key(b))
         self.assertFalse(start_before_key(b) < start_before_key(a))
+        self.assertTrue(sort_key(a) < sort_key(b))
+        self.assertFalse(sort_key(b) < sort_key(a))
 
         with self.assertRaises(NotImplementedError):
             a < b
@@ -2042,6 +2063,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertFalse(start_before_key(a) < start_before_key(b))
         self.assertFalse(start_before_key(b) < start_before_key(a))
+        self.assertTrue(sort_key(a) < sort_key(b))
+        self.assertFalse(sort_key(b) < sort_key(a))
 
         with self.assertRaises(NotImplementedError):
             a < b
@@ -2112,6 +2135,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertFalse(start_before_key(a) < start_before_key(b))
         self.assertTrue(start_before_key(b) < start_before_key(a))
+        self.assertFalse(sort_key(a) < sort_key(b))
+        self.assertTrue(sort_key(b) < sort_key(a))
 
         with self.assertRaises(NotImplementedError):
             a < b
@@ -2182,6 +2207,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertFalse(start_before_key(a) < start_before_key(b))
         self.assertFalse(start_before_key(b) < start_before_key(a))
+        self.assertFalse(sort_key(a) < sort_key(b))
+        self.assertFalse(sort_key(b) < sort_key(a))
 
         with self.assertRaises(NotImplementedError):
             a < b
@@ -2248,6 +2275,8 @@ class TestDatetimeRange(unittest.TestCase):
 
         self.assertFalse(start_before_key(smaller) < start_before_key(bigger))
         self.assertTrue(start_before_key(bigger) < start_before_key(smaller))
+        self.assertFalse(sort_key(smaller) < sort_key(bigger))
+        self.assertTrue(sort_key(bigger) < sort_key(smaller))
 
         with self.assertRaises(NotImplementedError):
             smaller < bigger
@@ -2433,6 +2462,10 @@ class TestDatetimeRange(unittest.TestCase):
             sorted(dtrs[::-1], key=start_before_key),
             dtrs[1::-1] + dtrs[2:3],  # Indices: 1, 0, 2
         )
+        self.assertEqual(sorted(dtrs, key=sort_key), dtrs)
+        self.assertEqual(sorted(dtrs, reverse=True, key=sort_key), dtrs[::-1])
+        self.assertEqual(sorted(dtrs[::-1], key=sort_key), dtrs)
+        self.assertEqual(sorted(dtrs[::-1], reverse=True, key=sort_key), dtrs[::-1])
 
     def test_infinite_end(self):
         dtr = DatetimeRange(datetime(2013, 1, 1), None)
