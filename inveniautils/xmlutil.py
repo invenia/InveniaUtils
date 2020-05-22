@@ -1,6 +1,6 @@
 import logging
 
-import lxml.etree
+import lxml.etree  # type: ignore
 
 logger = logging.getLogger(__name__)
 

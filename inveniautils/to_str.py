@@ -14,9 +14,9 @@ def float_to_decimal_str(f: float) -> str:
     float_string = repr(f)
     # detect scientific notation
     if "e" in float_string:
-        digits, exp = float_string.split("e")
+        digits, exp_str = float_string.split("e")
         digits = digits.replace(".", "").replace("-", "")
-        exp = int(exp)
+        exp = int(exp_str)
         sign = "-" if f < 0 else ""
 
         if exp > 0:

@@ -1,5 +1,5 @@
 import math
-import pint
+import pint  # type: ignore
 
 ureg = pint.UnitRegistry()
 Q_ = ureg.Quantity
