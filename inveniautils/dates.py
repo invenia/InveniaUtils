@@ -1,5 +1,5 @@
 import calendar
-import regex
+import regex  # type: ignore
 import pytz
 
 from collections.abc import Iterable

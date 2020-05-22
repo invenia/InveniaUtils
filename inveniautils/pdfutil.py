@@ -1,8 +1,8 @@
 from io import StringIO
-from pdfminer.converter import TextConverter
-from pdfminer.layout import LAParams
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.pdfpage import PDFPage
+from pdfminer.converter import TextConverter  # type: ignore
+from pdfminer.layout import LAParams  # type: ignore
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter  # type: ignore
+from pdfminer.pdfpage import PDFPage  # type: ignore
 from typing import BinaryIO
 
 

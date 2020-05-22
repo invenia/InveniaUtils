@@ -14,8 +14,8 @@ include:
 # "Upload to PyPiCloud":
 #   extends: .upload_to_pypicloud
 
-"Check Code Format":
+"Check Code Format/Typing":
   stage: setup
   extends: .py_3_7
   script:
-    - tox -re formatting
+    - tox -re formatting,types

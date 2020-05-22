@@ -25,7 +25,7 @@ from dateutil.parser import parse as datetime_parser
 from dateutil.relativedelta import relativedelta
 
 from pytz import timezone, utc
-from pytz.exceptions import NonExistentTimeError, AmbiguousTimeError
+from pytz.exceptions import NonExistentTimeError, AmbiguousTimeError  # type: ignore
 
 wpg = timezone("America/Winnipeg")
 
