@@ -33,7 +33,8 @@ class TestDatetimeRange(unittest.TestCase):
         """
         Creation of datetime range without timezones.
         """
-        test = {"start": datetime.now() - timedelta(days=3), "end": datetime.now()}
+        now = datetime.now()
+        test = {"start": now - timedelta(days=3), "end": now}
         expected = [
             test["start"] + timedelta(days=0),
             test["start"] + timedelta(days=1),
@@ -48,6 +49,8 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertEqual(result.tz_aware, False)
         self.assertEqual(result, result)
         self.assertEqual(list(result.dates(timedelta(days=1))), expected)
+        self.assertEqual(result.size(), timedelta(days=3))
+        self.assertEqual(len(result), int(timedelta(days=3).total_seconds()))
 
     def test_timezone_aware(self):
         """
@@ -72,6 +75,28 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertEqual(result.end, test["end"])
         self.assertEqual(result.tz_aware, True)
         self.assertEqual(list(result.dates(timedelta(hours=1))), expected)
+        self.assertEqual(result.size(), timedelta(seconds=18000))
+        self.assertEqual(len(result), 18000)
+
+    def test_infinite(self):
+        """
+        Creation of datetime range without an end.
+        """
+        result = DatetimeRange(datetime(2000, 1, 1), None)
+
+        self.assertEqual(result.start, datetime(2000, 1, 1))
+        self.assertEqual(result.end_infinite, True)
+        self.assertEqual(result, result)
+        with self.assertRaises(ValueError):
+            len(result)
+
+        result = DatetimeRange(datetime(2000, 1, 1), datetime.max)
+
+        self.assertEqual(result.start, datetime(2000, 1, 1))
+        self.assertEqual(result.end_infinite, True)
+        self.assertEqual(result, result)
+        with self.assertRaises(ValueError):
+            len(result)
 
     def test_assign_start(self):
         """
@@ -118,6 +143,8 @@ class TestDatetimeRange(unittest.TestCase):
             list(dtr.ranges(timedelta(0))),
             [DatetimeRange(expected, expected, range_bounds)],
         )
+        self.assertEqual(dtr.size(), timedelta())
+        self.assertEqual(len(dtr), 0)
 
     def test_start_after_end(self):
         """

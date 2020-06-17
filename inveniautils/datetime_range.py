@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Iterator, Optional, Tuple, Union
 import warnings
 
 from collections.abc import Iterable
@@ -95,7 +95,7 @@ def is_zero_delta(delta: Union[timedelta, relativedelta]) -> bool:
     return True
 
 
-def is_infinite_datetime(dt: datetime) -> datetime:
+def is_infinite_datetime(dt: datetime) -> bool:
     if dt.tzinfo is not None:
         return dt == POS_INF_DATETIME_TZ
     else:
@@ -109,11 +109,11 @@ def pos_infinite_datetime(tz_aware: bool) -> datetime:
         return POS_INF_DATETIME
 
 
-def start_before_key(dtr: DatetimeRange) -> bool:
+def start_before_key(dtr: DatetimeRange) -> Tuple[datetime, bool]:
     return (dtr.start, dtr.start_bound == Bound.EXCLUSIVE)
 
 
-def sort_key(dtr: DatetimeRange) -> Tuple[int, bool, int, bool]:
+def sort_key(dtr: DatetimeRange) -> Tuple[datetime, bool, datetime, bool]:
     # start and end bounds are inverted because an inclusive start
     # starts first and an exclusive end ends first.
     return (
@@ -224,7 +224,7 @@ class DatetimeRange:
         self,
         start: datetime,
         end: Optional[datetime],
-        bounds: Union[Bound, Tuple[Bound, Bound]] = Bound.INCLUSIVE
+        bounds: Union[Bound, Tuple[Bound, Bound]] = Bound.INCLUSIVE,
     ):
         self._start = start
 
@@ -266,7 +266,7 @@ class DatetimeRange:
 
         # Unbounded range should not include that end point.
         if self._infinite_end:
-            self._include_end = Bound.EXCLUSIVE
+            self._include_end = False
 
     @classmethod
     def fromstring(cls, range_str: str) -> DatetimeRange:
@@ -364,7 +364,7 @@ class DatetimeRange:
     @classmethod
     def effective_ranges(
         cls, effective_dates: Iterable[datetime]
-    ) -> Iterable[DatetimeRange]:
+    ) -> Iterator[DatetimeRange]:
         """
         Takes a complete set of effective datetimes and creates the
         ranges that they are effective for. Note that the given
@@ -395,7 +395,7 @@ class DatetimeRange:
             effective_start = effective_until
 
     @classmethod
-    def reduce(cls, ranges: Iterable[DatetimeRange]) -> Iterable[DatetimeRange]:
+    def reduce(cls, ranges: Iterable[DatetimeRange]) -> Iterator[DatetimeRange]:
         """
         Combines a iterable of ranges into an equivalent set of ranges
         with containing no overlaps ranges.
@@ -419,9 +419,7 @@ class DatetimeRange:
         for dtr in ranges:
             if expanded is None:
                 expanded = dtr.copy()
-            elif expanded.before_touching(dtr) or expanded.before_overlaps(
-                dtr
-            ):  # noqa: E501
+            elif expanded.before_touching(dtr) or expanded.before_overlaps(dtr):
                 expanded.end = dtr.end
                 expanded.end_included = dtr.end_included
             elif expanded.before_disjoint(dtr):
@@ -571,7 +569,7 @@ class DatetimeRange:
 
         if value:
             self._end = pos_infinite_datetime(self._end.tzinfo is not None)
-            self._include_end = Bound.EXCLUSIVE
+            self._include_end = False
 
     @property
     def bounds(self) -> Tuple[Bound, Bound]:
@@ -777,7 +775,7 @@ class DatetimeRange:
     def __len__(self) -> int:
         return int(self.size().total_seconds())
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         # Note: Probably could have a better hashing algorithm but this
         # functionally works.
         return hash((self.start, self.end, self.start_included, self.end_included))
@@ -788,7 +786,7 @@ class DatetimeRange:
 
         NOTE: Will raise a ValueError if the range is infinite
         """
-        if self._is_infinite_datetime:
+        if self._infinite_end:
             raise ValueError("Datetime range has infinite size")
 
         return self.end - self.start
@@ -806,9 +804,7 @@ class DatetimeRange:
             start = dtr.start
             start_bound = dtr.start_bound
 
-        if self.end < dtr.end or (
-            not self.end_included and self.end == dtr.end
-        ):
+        if self.end < dtr.end or (not self.end_included and self.end == dtr.end):
             end = self.end
             end_bound = self.end_bound
         else:
@@ -821,8 +817,8 @@ class DatetimeRange:
         return self.overlapping_range(dtr)
 
     def dates(
-        self, interval: timedelta, reverse: bool = False, tz = None
-    ) -> Iterable[datetime]:
+        self, interval: timedelta, reverse: bool = False, tz=None
+    ) -> Iterator[datetime]:
         """
         Generates a series of datetimes separated by the interval
         starting with the range start and ending on or before the range
