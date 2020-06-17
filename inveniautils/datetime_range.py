@@ -750,10 +750,24 @@ class DatetimeRange(object):
     def __contains__(self, date):
         return self.contains(date)
 
+    def __len__(self):
+        return self.size().total_seconds()
+
     def __hash__(self):
         # Note: Probably could have a better hashing algorithm but this
         # functionally works.
         return hash((self.start, self.end, self.start_included, self.end_included))
+
+    def size(self) -> timedelta:
+        """
+        Return a timedelta representing the length of the range.
+
+        NOTE: Will raise a ValueError if the range is infinite
+        """
+        if self.is_infinite_datetime:
+            raise ValueError("Datetime range has infinite size")
+
+        return self.end - self.start
 
     def overlapping_range(self, dtr):
         if not self.overlaps(dtr):
