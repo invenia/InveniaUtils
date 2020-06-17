@@ -1368,13 +1368,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(earlier) < sort_key(later))
         self.assertFalse(sort_key(later) < sort_key(earlier))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier < later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier > later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier <= later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier >= later
 
         with self.assertRaises(ValueError):
@@ -1437,13 +1437,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(earlier) < sort_key(later))
         self.assertFalse(sort_key(later) < sort_key(earlier))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier < later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier > later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier <= later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier >= later
 
         with self.assertRaises(ValueError):
@@ -1506,13 +1506,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(earlier) < sort_key(later))
         self.assertFalse(sort_key(later) < sort_key(earlier))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier < later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier > later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier <= later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier >= later
 
         with self.assertRaises(ValueError):
@@ -1575,13 +1575,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(earlier) < sort_key(later))
         self.assertFalse(sort_key(later) < sort_key(earlier))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier < later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier > later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier <= later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier >= later
 
         with self.assertRaises(ValueError):
@@ -1644,13 +1644,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(earlier) < sort_key(later))
         self.assertFalse(sort_key(later) < sort_key(earlier))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier < later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier > later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier <= later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier >= later
 
         overlap = DatetimeRange(
@@ -1710,13 +1710,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(earlier) < sort_key(later))
         self.assertFalse(sort_key(later) < sort_key(earlier))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier < later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier > later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier <= later
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             earlier >= later
 
         overlap = DatetimeRange(datetime(2012, 1, 2), datetime(2012, 1, 4))
@@ -1778,13 +1778,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertFalse(sort_key(a) < sort_key(b))
         self.assertFalse(sort_key(b) < sort_key(a))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a < b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a > b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a <= b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a >= b
 
         overlap = DatetimeRange(
@@ -1850,13 +1850,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(a) < sort_key(b))
         self.assertFalse(sort_key(b) < sort_key(a))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a < b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a > b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a <= b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a >= b
 
         overlap = DatetimeRange(
@@ -1922,13 +1922,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertFalse(sort_key(a) < sort_key(b))
         self.assertTrue(sort_key(b) < sort_key(a))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a < b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a > b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a <= b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a >= b
 
         overlap = DatetimeRange(
@@ -1994,13 +1994,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(a) < sort_key(b))
         self.assertFalse(sort_key(b) < sort_key(a))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a < b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a > b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a <= b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a >= b
 
         overlap = DatetimeRange(
@@ -2066,13 +2066,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertTrue(sort_key(a) < sort_key(b))
         self.assertFalse(sort_key(b) < sort_key(a))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a < b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a > b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a <= b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a >= b
 
         overlap = DatetimeRange(
@@ -2138,13 +2138,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertFalse(sort_key(a) < sort_key(b))
         self.assertTrue(sort_key(b) < sort_key(a))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a < b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a > b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a <= b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a >= b
 
         overlap = DatetimeRange(
@@ -2210,13 +2210,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertFalse(sort_key(a) < sort_key(b))
         self.assertFalse(sort_key(b) < sort_key(a))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a < b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a > b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a <= b
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             a >= b
 
         overlap = DatetimeRange(
@@ -2278,13 +2278,13 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertFalse(sort_key(smaller) < sort_key(bigger))
         self.assertTrue(sort_key(bigger) < sort_key(smaller))
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             smaller < bigger
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             smaller > bigger
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             smaller <= bigger
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             smaller >= bigger
 
         overlap = DatetimeRange(datetime(2012, 1, 2), datetime(2012, 1, 4))
@@ -2451,9 +2451,9 @@ class TestDatetimeRange(unittest.TestCase):
             ),
         ]
 
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             sorted(dtrs[::1])
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(TypeError):
             sorted(dtrs[::-1])
 
         self.assertEqual(sorted(dtrs[::1], key=start_before_key), dtrs)
