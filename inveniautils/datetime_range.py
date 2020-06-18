@@ -5,7 +5,7 @@ from typing import Any, Iterator, Optional, Tuple, Union
 import warnings
 
 from collections.abc import Iterable
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
 from enum import IntEnum
 from functools import partial
 from functools import cmp_to_key
@@ -444,7 +444,7 @@ class DatetimeRange:
 
         return DatetimeRange(start, end, (self.start_bound, self.end_bound))
 
-    def astimezone(self, tz) -> DatetimeRange:
+    def astimezone(self, tz: tzinfo) -> DatetimeRange:
         if not self.tz_aware:
             raise ValueError("astimezone() cannot be applied to a naive DatetimeRange")
 
@@ -817,7 +817,7 @@ class DatetimeRange:
         return self.overlapping_range(dtr)
 
     def dates(
-        self, interval: timedelta, reverse: bool = False, tz=None
+        self, interval: timedelta, reverse: bool = False, tz: tzinfo = None
     ) -> Iterator[datetime]:
         """
         Generates a series of datetimes separated by the interval
@@ -887,7 +887,7 @@ class DatetimeRange:
         self,
         interval: timedelta,
         reverse: bool = False,
-        tz=None,
+        tz: tzinfo = None,
         bounds: Tuple[Bound, Bound] = (Bound.INCLUSIVE, Bound.EXCLUSIVE),
     ):
         """
