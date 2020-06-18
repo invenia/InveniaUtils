@@ -209,7 +209,7 @@ class Bound(IntEnum):
         warnings.warn(
             (
                 "This method will be deprecated in inveniautils 0.6.0 "
-                "and Bound will beconverted from an IntEnum into an Enum. "
+                "and Bound will be converted from an IntEnum into an Enum. "
                 "Bounds can be directly built using Bound(value)."
             ),
             DeprecationWarning,
