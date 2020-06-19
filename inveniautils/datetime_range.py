@@ -158,8 +158,8 @@ def cmp_ranges(
     """
     warnings.warn(
         (
-            "This method will be deprecated in inveniautils 0.4.0. "
-            "Use key=full_key when sorting."
+            "This method will be removed in inveniautils 0.4.0. "
+            "Use key=sort_key when sorting."
         ),
         DeprecationWarning,
         stacklevel=2,
@@ -208,7 +208,7 @@ class Bound(IntEnum):
     def valid(cls, value: int) -> bool:
         warnings.warn(
             (
-                "This method will be deprecated in inveniautils 0.6.0 "
+                "This method will be removed in inveniautils 0.4.0 "
                 "and Bound will be converted from an IntEnum into an Enum. "
                 "Bounds can be directly built using Bound(value)."
             ),
