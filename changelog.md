@@ -1,3 +1,10 @@
+# InveniaUtils
+
+## Version 0.3.1
+
+  * Separate install and test requirements.
+    [!9](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/9)
+
 ## Version 0.3.0
 
 ### Features
