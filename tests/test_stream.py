@@ -258,7 +258,7 @@ class TestSeekableStream(unittest.TestCase):
         stream.seek(0)
         self.assertEqual(
             stream.readlines(),
-            ["Hello World.\n", "I am Invenia.\n", "I am -50 degrees.\n"]
+            ["Hello World.\n", "I am Invenia.\n", "I am -50 degrees.\n"],
         )
         self.assertEqual(stream.readlines(), [])
 
@@ -279,6 +279,7 @@ class TestSeekableStream(unittest.TestCase):
         class ReadOnly:
             def __init__(self, bytes):
                 self._stream = BytesIO(bytes)
+
             def read(self, size: int = -1) -> bytes:
                 return self._stream.read(size)
 
@@ -317,7 +318,7 @@ class TestSeekableStream(unittest.TestCase):
         stream.seek(0)
         self.assertEqual(
             stream.readlines(),
-            [b"Hello World.\n", b"I am Invenia.\n", b"I am -50 degrees.\n"]
+            [b"Hello World.\n", b"I am Invenia.\n", b"I am -50 degrees.\n"],
         )
         self.assertEqual(stream.readlines(), [])
 

@@ -7,7 +7,7 @@ import zipfile
 
 from gzip import GzipFile
 from io import SEEK_END, BytesIO, StringIO, TextIOBase
-from typing import Optional, AnyStr, Union, Protocol
+from typing import Optional, AnyStr, Union, Protocol, List
 
 DEFAULT_SIZE = 262144  # 256KB in bytes.
 
@@ -184,21 +184,17 @@ class UnzipSingle(object):
 
 
 class StreamLike(Protocol):
-    # Note: method signature is not checked / irrelevant.
     def read(self) -> Union[AnyStr]:
         ...
 
 
 class SeekableStream:
-    """ A seekable stream container for bytes or strings that provides annotation via metadata.
+    """A seekable stream container for bytes or strings that provides annotation via metadata.
 
     Warning: This will fully load any input streams.
     """
-    def __init__(
-        self,
-        content: Union[AnyStr, StreamLike] = "",
-        **kwargs
-    ):
+
+    def __init__(self, content: Union[AnyStr, StreamLike] = "", **kwargs):
         if isinstance(content, str):
             self.content = StringIO(content)
         elif isinstance(content, bytes):
@@ -238,21 +234,18 @@ class SeekableStream:
     def readline(self, size: int = -1) -> AnyStr:
         return self.content.readline(size)
 
-    def readlines(self, hint: int = -1) -> AnyStr:
+    def readlines(self, hint: int = -1) -> List[AnyStr]:
         return self.content.readlines(hint)
 
     def readable(self) -> bool:
         return self.content.readable()
 
     def save(
-        self,
-        directory: str,
-        filename: Optional[str] = None,
-        overwrite: bool = False
+        self, directory: str, filename: Optional[str] = None, overwrite: bool = False
     ):
         if filename is None:
-            if 'filename' in self.metadata:
-                filename = self.metadata['filename']
+            if "filename" in self.metadata:
+                filename = self.metadata["filename"]
             else:
                 raise ValueError("Specify a filename to save as.")
 
@@ -262,11 +255,11 @@ class SeekableStream:
             raise IOError("File already exists. Use overwrite.")
 
         with AutoRewind(self.content) as input_stream:
-            with open(path, 'w') as output_stream:
+            with open(path, "w") as output_stream:
                 copy(input_stream, output_stream)
 
     def __next__(self) -> AnyStr:
         return self.content.__next__()
 
-    def __iter__(self) -> 'SeekableStream':
+    def __iter__(self) -> "SeekableStream":
         return self
