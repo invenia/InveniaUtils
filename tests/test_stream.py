@@ -9,6 +9,7 @@ from inveniautils.stream import (
     equal_safe,
     compression_ratio,
     UnzipSingle,
+    SeekableStream,
 )
 
 from io import StringIO, BytesIO
@@ -221,6 +222,117 @@ class TestEqualSafe(unittest.TestCase):
         result = equal_safe(shorter, longer, out, chunk_size=1)
         self.assertEqual(result, expected)
         self.assertEqual(out.getvalue(), longer.getvalue())
+
+
+class TestSeekableStream(unittest.TestCase):
+    def test_string(self):
+        input_string = "Hello World.\nI am Invenia.\nI am -50 degrees.\n"
+
+        stream = SeekableStream(input_string)
+
+        self.assertTrue(stream.readable())
+        self.assertTrue(stream.seekable())
+        self.assertFalse(stream.closed)
+
+        # test read, seek, tell
+        self.assertTrue(stream.tell() == 0)
+        self.assertEqual(stream.read(), input_string)
+        self.assertTrue(stream.tell() == len(input_string))
+        stream.seek(0)
+        self.assertTrue(stream.tell() == 0)
+        self.assertEqual(stream.read(25), input_string[:25])
+        self.assertTrue(stream.tell() == 25)
+        self.assertEqual(stream.read(), input_string[25:])
+        stream.seek(25)
+        self.assertEqual(stream.read(), input_string[25:])
+        self.assertTrue(stream.tell() == len(input_string))
+
+        # test readline
+        stream.seek(0)
+        self.assertEqual(stream.readline(), "Hello World.\n")
+        self.assertEqual(stream.readline(), "I am Invenia.\n")
+        self.assertEqual(stream.readline(), "I am -50 degrees.\n")
+        self.assertEqual(stream.readline(), "")
+
+        # test readlines
+        stream.seek(0)
+        self.assertEqual(
+            stream.readlines(),
+            ["Hello World.\n", "I am Invenia.\n", "I am -50 degrees.\n"]
+        )
+        self.assertEqual(stream.readlines(), [])
+
+        # test iter & next
+        stream.seek(0)
+        it = iter(stream)
+        self.assertEqual(next(it), "Hello World.\n")
+        self.assertEqual(next(it), "I am Invenia.\n")
+        self.assertEqual(next(it), "I am -50 degrees.\n")
+        self.assertRaises(StopIteration, next, it)
+
+        # test close
+        self.assertFalse(stream.closed)
+        stream.close()
+        self.assertTrue(stream.closed)
+
+    def test_read_only_byte_stream(self):
+        class ReadOnly:
+            def __init__(self, bytes):
+                self._stream = BytesIO(bytes)
+            def read(self, size: int = -1) -> bytes:
+                return self._stream.read(size)
+
+        # create a read-only stream
+        input_bytes = b"Hello World.\nI am Invenia.\nI am -50 degrees.\n"
+        read_stream = ReadOnly(input_bytes)
+        self.assertFalse(hasattr(read_stream, "seek"))
+
+        stream = SeekableStream(read_stream)
+
+        self.assertTrue(stream.readable())
+        self.assertTrue(stream.seekable())
+        self.assertFalse(stream.closed)
+
+        # test read, seek, tell
+        self.assertTrue(stream.tell() == 0)
+        self.assertEqual(stream.read(), input_bytes)
+        self.assertTrue(stream.tell() == len(input_bytes))
+        stream.seek(0)
+        self.assertTrue(stream.tell() == 0)
+        self.assertEqual(stream.read(25), input_bytes[:25])
+        self.assertTrue(stream.tell() == 25)
+        self.assertEqual(stream.read(), input_bytes[25:])
+        stream.seek(25)
+        self.assertEqual(stream.read(), input_bytes[25:])
+        self.assertTrue(stream.tell() == len(input_bytes))
+
+        # test readline
+        stream.seek(0)
+        self.assertEqual(stream.readline(), b"Hello World.\n")
+        self.assertEqual(stream.readline(), b"I am Invenia.\n")
+        self.assertEqual(stream.readline(), b"I am -50 degrees.\n")
+        self.assertEqual(stream.readline(), b"")
+
+        # test readlines
+        stream.seek(0)
+        self.assertEqual(
+            stream.readlines(),
+            [b"Hello World.\n", b"I am Invenia.\n", b"I am -50 degrees.\n"]
+        )
+        self.assertEqual(stream.readlines(), [])
+
+        # test iter & next
+        stream.seek(0)
+        it = iter(stream)
+        self.assertEqual(next(it), b"Hello World.\n")
+        self.assertEqual(next(it), b"I am Invenia.\n")
+        self.assertEqual(next(it), b"I am -50 degrees.\n")
+        self.assertRaises(StopIteration, next, it)
+
+        # test close
+        self.assertFalse(stream.closed)
+        stream.close()
+        self.assertTrue(stream.closed)
 
 
 if __name__ == "__main__":
