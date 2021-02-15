@@ -7,7 +7,7 @@ import zipfile
 
 from gzip import GzipFile
 from io import SEEK_END, BytesIO, StringIO, TextIOBase
-from typing import Optional, AnyStr, Union, Protocol, List
+from typing import Optional, Union, List, IO
 
 DEFAULT_SIZE = 262144  # 256KB in bytes.
 
@@ -183,11 +183,6 @@ class UnzipSingle(object):
         self.zip_file.close()
 
 
-class StreamLike(Protocol):
-    def read(self) -> Union[AnyStr]:
-        ...
-
-
 class SeekableStream:
     """
     A seekable stream container for bytes or strings.
@@ -196,9 +191,9 @@ class SeekableStream:
     Warning: This will fully load any input streams.
     """
 
-    def __init__(self, content: Union[AnyStr, StreamLike] = "", **kwargs):
+    def __init__(self, content: Union[str, bytes, IO] = "", **kwargs):
         if isinstance(content, str):
-            self.content = StringIO(content)
+            self.content = StringIO(content)  # type: Union[StringIO, BytesIO]
         elif isinstance(content, bytes):
             self.content = BytesIO(content)
         elif hasattr(content, "read") and callable(content.read):
@@ -230,13 +225,13 @@ class SeekableStream:
     def tell(self) -> int:
         return self.content.tell()
 
-    def read(self, size: int = -1) -> AnyStr:
+    def read(self, size: int = -1) -> Union[str, bytes]:
         return self.content.read(size)
 
-    def readline(self, size: int = -1) -> AnyStr:
+    def readline(self, size: int = -1) -> Union[str, bytes]:
         return self.content.readline(size)
 
-    def readlines(self, hint: int = -1) -> List[AnyStr]:
+    def readlines(self, hint: int = -1) -> Union[List[str], List[bytes]]:
         return self.content.readlines(hint)
 
     def readable(self) -> bool:
@@ -260,7 +255,7 @@ class SeekableStream:
             with open(path, "w") as output_stream:
                 copy(input_stream, output_stream)
 
-    def __next__(self) -> AnyStr:
+    def __next__(self) -> Union[str, bytes]:
         return self.content.__next__()
 
     def __iter__(self) -> "SeekableStream":
