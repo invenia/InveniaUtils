@@ -189,7 +189,9 @@ class StreamLike(Protocol):
 
 
 class SeekableStream:
-    """A seekable stream container for bytes or strings that provides annotation via metadata.
+    """
+    A seekable stream container for bytes or strings.
+    Provides stream annotation via metadata.
 
     Warning: This will fully load any input streams.
     """
