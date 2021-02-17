@@ -202,7 +202,7 @@ class SeekableStream:
             chunk = content.read(DEFAULT_SIZE)
             self._content = StringIO() if isinstance(chunk, str) else BytesIO()
             self._content.write(chunk)
-            copy(content, self.content)
+            copy(content, self._content)
             self._content.seek(0)
         else:
             raise TypeError(f"Invalid content type: {type(content)}.")
