@@ -229,6 +229,7 @@ class TestSeekableStream(unittest.TestCase):
         input_string = "Hello World.\nI am Invenia.\nI am -50 degrees.\n"
 
         stream = SeekableStream(input_string)
+        self.assertFalse(stream.is_bytes)
 
         self.assertTrue(stream.readable())
         self.assertTrue(stream.seekable())
@@ -289,6 +290,7 @@ class TestSeekableStream(unittest.TestCase):
         self.assertFalse(hasattr(read_stream, "seek"))
 
         stream = SeekableStream(read_stream)
+        self.assertTrue(stream.is_bytes)
 
         self.assertTrue(stream.readable())
         self.assertTrue(stream.seekable())
@@ -334,6 +336,37 @@ class TestSeekableStream(unittest.TestCase):
         self.assertFalse(stream.closed)
         stream.close()
         self.assertTrue(stream.closed)
+
+    def test_annotation(self):
+        input_string = "Hello World.\nI am Invenia.\nI am -50 degrees.\n"
+
+        metadata = {
+            "file_name": "somefile.txt",
+            "file_type": "some type",
+            "some_metadata": "metadata1",
+        }
+
+        stream = SeekableStream(input_string, **metadata)
+        self.assertEqual(stream.metadata, metadata)
+
+        # update metadata
+        stream.metadata["some_metadata"] = "metadata2"
+        self.assertNotEqual(stream.metadata, metadata)
+        metadata["some_metadata"] = "metadata2"
+        self.assertEqual(stream.metadata, metadata)
+
+        # add metadata
+        stream.metadata["some_more_metadata"] = "metadata3"
+        self.assertNotEqual(stream.metadata, metadata)
+        metadata["some_more_metadata"] = "metadata3"
+        self.assertEqual(stream.metadata, metadata)
+
+        # delete metadata
+        stream.metadata.pop("some_more_metadata")
+        self.assertNotEqual(stream.metadata, metadata)
+        metadata.pop("some_more_metadata")
+        self.assertEqual(stream.metadata, metadata)
+
 
 
 if __name__ == "__main__":

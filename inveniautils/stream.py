@@ -207,6 +207,7 @@ class SeekableStream:
         else:
             raise TypeError(f"Invalid content type: {type(content)}.")
 
+        self.is_bytes = isinstance(self.content, BytesIO)
         self.metadata = kwargs
 
     @property
