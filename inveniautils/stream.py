@@ -193,50 +193,50 @@ class SeekableStream:
 
     def __init__(self, content: Union[str, bytes, IO] = "", **kwargs):
         if isinstance(content, str):
-            self.content = StringIO(content)  # type: Union[StringIO, BytesIO]
+            self._content = StringIO(content)  # type: Union[StringIO, BytesIO]
         elif isinstance(content, bytes):
-            self.content = BytesIO(content)
+            self._content = BytesIO(content)
         elif hasattr(content, "read") and callable(content.read):
             if hasattr(content, "seekable") and content.seekable():
                 content.seek(0)
             chunk = content.read(DEFAULT_SIZE)
-            self.content = StringIO() if isinstance(chunk, str) else BytesIO()
-            self.content.write(chunk)
+            self._content = StringIO() if isinstance(chunk, str) else BytesIO()
+            self._content.write(chunk)
             copy(content, self.content)
-            self.content.seek(0)
+            self._content.seek(0)
         else:
             raise TypeError(f"Invalid content type: {type(content)}.")
 
-        self.is_bytes = isinstance(self.content, BytesIO)
+        self.is_bytes = isinstance(self._content, BytesIO)
         self.metadata = kwargs
 
     @property
     def closed(self) -> bool:
-        return self.content.closed
+        return self._content.closed
 
     def close(self):
-        self.content.close()
+        self._content.close()
 
     def seek(self, offset: int, whence: int = os.SEEK_SET):
-        self.content.seek(offset, whence)
+        self._content.seek(offset, whence)
 
     def seekable(self) -> bool:
-        return self.content.seekable()
+        return self._content.seekable()
 
     def tell(self) -> int:
-        return self.content.tell()
+        return self._content.tell()
 
     def read(self, size: int = -1) -> Union[str, bytes]:
-        return self.content.read(size)
+        return self._content.read(size)
 
     def readline(self, size: int = -1) -> Union[str, bytes]:
-        return self.content.readline(size)
+        return self._content.readline(size)
 
     def readlines(self, hint: int = -1) -> Union[List[str], List[bytes]]:
-        return self.content.readlines(hint)
+        return self._content.readlines(hint)
 
     def readable(self) -> bool:
-        return self.content.readable()
+        return self._content.readable()
 
     def save(
         self, directory: str, filename: Optional[str] = None, overwrite: bool = False
@@ -252,12 +252,12 @@ class SeekableStream:
         if not overwrite and os.path.exists(path):
             raise IOError("File already exists. Use overwrite.")
 
-        with AutoRewind(self.content) as input_stream:
+        with AutoRewind(self._content) as input_stream:
             with open(path, "w") as output_stream:
                 copy(input_stream, output_stream)
 
     def __next__(self) -> Union[str, bytes]:
-        return self.content.__next__()
+        return self._content.__next__()
 
     def __iter__(self) -> "SeekableStream":
         return self
