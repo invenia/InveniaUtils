@@ -368,7 +368,6 @@ class TestSeekableStream(unittest.TestCase):
         self.assertEqual(stream.metadata, metadata)
 
 
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()
