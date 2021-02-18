@@ -397,6 +397,5 @@ class StaticLimiter(object):
         self._last_called = datetime.now(utc)
 
     def status(self, *args, **kwargs):
-        """For API compatibility with Limiter
-        """
+        """For API compatibility with Limiter"""
         self.record_request()

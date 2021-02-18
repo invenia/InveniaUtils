@@ -405,12 +405,12 @@ class DatetimeRange:
         # Order ranges in order to make reduction easier.
         ranges = sorted(
             ranges,
-            key=cmp_to_key(
-                lambda x, y: (
-                    cmp(x.start, y.start)
-                    or cmp(y.start_included, x.start_included)
-                    or cmp(y.end, x.end)
-                    or cmp(y.end_included, x.end_included)
+            key=cmp_to_key(  # type: ignore
+                lambda x, y: (  # type: ignore
+                    cmp(x.start, y.start)  # type: ignore
+                    or cmp(y.start_included, x.start_included)  # type: ignore
+                    or cmp(y.end, x.end)  # type: ignore
+                    or cmp(y.end_included, x.end_included)  # type: ignore
                 )
             ),
         )

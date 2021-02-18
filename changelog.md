@@ -1,5 +1,10 @@
 # InveniaUtils
 
+## Version 0.4.0
+
+  * Implement stream.SeekableStream class.
+    [!12](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/12)
+
 ## Version 0.3.1
 
   * Separate install and test requirements.

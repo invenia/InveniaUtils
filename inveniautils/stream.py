@@ -2,10 +2,12 @@
 Utilities related to file streams.
 """
 
+import os
 import zipfile
 
 from gzip import GzipFile
-from io import SEEK_END, BytesIO, StringIO
+from io import SEEK_END, BytesIO, StringIO, TextIOBase
+from typing import Optional, Union, List, IO
 
 DEFAULT_SIZE = 262144  # 256KB in bytes.
 
@@ -151,7 +153,7 @@ class AutoRewind(object):
 def copy(input_stream, output_stream, chunk_size=DEFAULT_SIZE):
     chunk = input_stream.read(chunk_size)
     while chunk:
-        if isinstance(chunk, bytes) and isinstance(output_stream, StringIO):
+        if isinstance(chunk, bytes) and isinstance(output_stream, TextIOBase):
             chunk = chunk.decode()
 
         output_stream.write(chunk)
@@ -179,3 +181,83 @@ class UnzipSingle(object):
     def __exit__(self, type, value, traceback):
         self.content.close()
         self.zip_file.close()
+
+
+class SeekableStream:
+    """
+    A seekable stream container for bytes or strings.
+    Provides stream annotation via metadata.
+
+    Warning: This will fully load any input streams.
+    """
+
+    def __init__(self, content: Union[str, bytes, IO] = "", **kwargs):
+        if isinstance(content, str):
+            self._content = StringIO(content)  # type: Union[StringIO, BytesIO]
+        elif isinstance(content, bytes):
+            self._content = BytesIO(content)
+        elif hasattr(content, "read") and callable(content.read):
+            if hasattr(content, "seekable") and content.seekable():
+                content.seek(0)
+            chunk = content.read(DEFAULT_SIZE)
+            self._content = StringIO() if isinstance(chunk, str) else BytesIO()
+            self._content.write(chunk)
+            copy(content, self._content)
+            self._content.seek(0)
+        else:
+            raise TypeError(f"Invalid content type: {type(content)}.")
+
+        self.is_bytes = isinstance(self._content, BytesIO)
+        self.metadata = kwargs
+
+    @property
+    def closed(self) -> bool:
+        return self._content.closed
+
+    def close(self):
+        self._content.close()
+
+    def seek(self, offset: int, whence: int = os.SEEK_SET):
+        self._content.seek(offset, whence)
+
+    def seekable(self) -> bool:
+        return self._content.seekable()
+
+    def tell(self) -> int:
+        return self._content.tell()
+
+    def read(self, size: int = -1) -> Union[str, bytes]:
+        return self._content.read(size)
+
+    def readline(self, size: int = -1) -> Union[str, bytes]:
+        return self._content.readline(size)
+
+    def readlines(self, hint: int = -1) -> Union[List[str], List[bytes]]:
+        return self._content.readlines(hint)
+
+    def readable(self) -> bool:
+        return self._content.readable()
+
+    def save(
+        self, directory: str, filename: Optional[str] = None, overwrite: bool = False
+    ):
+        if filename is None:
+            if "filename" in self.metadata:
+                filename = self.metadata["filename"]
+            else:
+                raise ValueError("Specify a filename to save as.")
+
+        path = os.path.join(directory, filename)
+
+        if not overwrite and os.path.exists(path):
+            raise IOError("File already exists. Use overwrite.")
+
+        with AutoRewind(self._content) as input_stream:
+            with open(path, "w") as output_stream:
+                copy(input_stream, output_stream)
+
+    def __next__(self) -> Union[str, bytes]:
+        return self._content.__next__()
+
+    def __iter__(self) -> "SeekableStream":
+        return self
