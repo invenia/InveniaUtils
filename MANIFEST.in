@@ -1,2 +1,2 @@
-include requirements.txt
+include requirements/install.txt
 include inveniautils/VERSION
