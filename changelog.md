@@ -1,5 +1,9 @@
 # InveniaUtils
 
+## Version 0.5.0
+
+  * Deploy releases to our private PyPI repo [!13](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/13)
+
 ## Version 0.4.0
 
   * Implement stream.SeekableStream class.
