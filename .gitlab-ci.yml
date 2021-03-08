@@ -10,12 +10,20 @@ include:
 "Test Python 3.7":
   extends: .test_3_7
 
-# Eventually we will want this package in PyPiCloud.
-# "Upload to PyPiCloud":
-#   extends: .upload_to_pypicloud
+"Test Python 3.8":
+  extends: .test_3_8
 
 "Check Code Format/Typing":
   stage: setup
   extends: .py_3_7
   script:
     - tox -re formatting,types
+
+"Version Check":
+  extends: .version_check
+
+"Test PyPI Build":
+  extends: .test_dist
+
+"Upload to Private PyPI":
+  extends: .upload_to_private_pypi
