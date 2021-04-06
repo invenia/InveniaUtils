@@ -209,7 +209,7 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertEqual(result.tz_aware, False)
         self.assertEqual(result, expected)
 
-    def test_fromstring_Inf(self):
+    def test_fromstring_inf(self):
         """
         Creation of datetime range from a string.
         """
