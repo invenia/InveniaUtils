@@ -291,7 +291,10 @@ class DatetimeRange:
                 )
 
             try:
-                end_date = datetime_parser(component["end_date"], default=base)
+                if component["end_date"] == "Inf":
+                    end_date = None
+                else:
+                    end_date = datetime_parser(component["end_date"], default=base)
             except TypeError:
                 raise ValueError(
                     "Unable to parse end date: {}".format(component["end_date"])

@@ -1,5 +1,9 @@
 # InveniaUtils
 
+## Version 0.6.0
+
+  * Decode Inf DatetimeRanges [!16](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/16)
+
 ## Version 0.5.0
 
   * Deploy releases to our private PyPI repo [!13](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/13), [!14](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/14)
