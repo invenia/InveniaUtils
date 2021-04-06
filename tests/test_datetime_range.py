@@ -209,6 +209,20 @@ class TestDatetimeRange(unittest.TestCase):
         self.assertEqual(result.tz_aware, False)
         self.assertEqual(result, expected)
 
+    def test_fromstring_Inf(self):
+        """
+        Creation of datetime range from a string.
+        """
+        test = "[2020-01-01 00:00:00+00:00, Inf)"
+        expected = DatetimeRange(start=datetime(2020, 1, 1, tzinfo=utc), end=None)
+
+        result = DatetimeRange.fromstring(test)
+
+        self.assertEqual(result.start, expected.start)
+        self.assertEqual(result.end, expected.end)
+        self.assertEqual(result.tz_aware, True)
+        self.assertEqual(result, expected)
+
     def test_cast_to_naive(self):
         """
         Datetime range assignment of tz_aware field.
