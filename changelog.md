@@ -1,5 +1,9 @@
 # InveniaUtils
 
+## Version 0.7.0
+
+  * Add custom logging handlers and formatters [!15](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/15)	
+
 ## Version 0.6.0
 
   * Decode Inf DatetimeRanges [!16](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/16)
