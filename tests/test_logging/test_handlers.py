@@ -56,6 +56,7 @@ class TestCustomHandler:
 
         assert handler.find_global_metadata("warblers") == warblers
         assert handler.find_global_metadata("owls") == owls
+        assert handler.find_global_metadata("penguins") is None
 
     def test_list_global_metadata(self) -> None:
         synonyms: Dict[str, List[str]] = {

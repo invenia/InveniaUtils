@@ -14,7 +14,7 @@ class CustomHandler(logging.Handler):
     """
 
     def __init__(
-        self, level: int = logging.NOTSET, global_metadata: Dict[str, Any] = {}
+        self, level: int = logging.NOTSET, global_metadata: Dict[str, Any] = None
     ) -> None:
         """
         Inits CustomHandler.
@@ -27,7 +27,12 @@ class CustomHandler(logging.Handler):
         super(CustomHandler, self).__init__(level=level)
 
         self.default_formatter: CustomFormatter = CustomFormatter()
-        self.global_metadata: Dict[str, Any] = global_metadata
+
+        self.global_metadata: Dict[str, Any]
+        if global_metadata:
+            self.global_metadata = global_metadata
+        else:
+            self.global_metadata = {}
 
     def set_global_metadata(self, **kwargs: Any) -> None:
         """
@@ -45,10 +50,7 @@ class CustomHandler(logging.Handler):
         Find returns the current value of the global metadata item specified by
         key or returns None should it not exist.
         """
-        result: Union[Any, None] = None
-        if key in self.global_metadata:
-            result = self.global_metadata[key]
-        return result
+        return self.global_metadata.get(key)
 
     def list_global_metadata(self) -> List[Tuple[str, Any]]:
         """
