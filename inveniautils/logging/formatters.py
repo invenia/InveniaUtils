@@ -62,7 +62,9 @@ class CustomFormatter(logging.Formatter):
         return formatted
 
     def format(
-        self, record: logging.LogRecord, additional_metadata: Dict[str, Any] = {}
+        self,
+        record: logging.LogRecord,
+        additional_metadata: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Formats a log record as text.
@@ -95,7 +97,9 @@ class CloudWatchLogFormatter(CustomFormatter):
     """Format logs appropriately for delivery to cloudwatch."""
 
     def format(
-        self, record: logging.LogRecord, additional_metadata: Dict[str, Any] = {}
+        self,
+        record: logging.LogRecord,
+        additional_metadata: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Formats a log record as text amenable to cloudwatch.
@@ -132,7 +136,9 @@ class JSONFormatter(CustomFormatter):
         super(JSONFormatter, self).__init__(datefmt=datefmt)
 
     def format(
-        self, record: logging.LogRecord, additional_metadata: Dict[str, Any] = {}
+        self,
+        record: logging.LogRecord,
+        additional_metadata: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         Formats a log record into a dictionary, then JSON dumps.
