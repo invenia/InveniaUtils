@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from inveniautils.logging.formatters import CustomFormatter
 
@@ -14,7 +14,9 @@ class CustomHandler(logging.Handler):
     """
 
     def __init__(
-        self, level: int = logging.NOTSET, global_metadata: Dict[str, Any] = None
+        self,
+        level: int = logging.NOTSET,
+        global_metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
         Inits CustomHandler.
