@@ -1,5 +1,8 @@
 pytz
 lxml
+openpyxl-stubs
+openpyxl
+xlrd
 pint
 python-dateutil
 cryptography
