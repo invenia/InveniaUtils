@@ -7,7 +7,7 @@ import zipfile
 
 from gzip import GzipFile
 from io import SEEK_END, BytesIO, StringIO, TextIOBase
-from typing import Optional, Union, List, IO
+from typing import Optional, Union, List, IO, cast
 
 DEFAULT_SIZE = 262144  # 256KB in bytes.
 
@@ -237,6 +237,20 @@ class SeekableStream:
 
     def readable(self) -> bool:
         return self._content.readable()
+
+    def write(self, content: Union[str, bytes, bytearray]) -> int:
+        if not self.is_bytes and type(content) is str:
+            content = cast(str, content)
+            self._content = cast(StringIO, self._content)
+            return self._content.write(content)
+        elif self.is_bytes and type(content) in (bytes, bytearray):
+            content = cast(Union[bytes, bytearray], content)
+            self._content = cast(BytesIO, self._content)
+            return self._content.write(content)
+        else:
+            raise TypeError(
+                f"Cannot write {type(content)} to {type(self._content)} stream."
+            )
 
     def save(
         self, directory: str, filename: Optional[str] = None, overwrite: bool = False
