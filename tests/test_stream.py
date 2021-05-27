@@ -1,5 +1,6 @@
 import logging
 import unittest
+import os
 from . import full_path
 
 from inveniautils.stream import (
@@ -366,6 +367,33 @@ class TestSeekableStream(unittest.TestCase):
         self.assertNotEqual(stream.metadata, metadata)
         metadata.pop("some_more_metadata")
         self.assertEqual(stream.metadata, metadata)
+
+    def test_write_string(self):
+        input_1 = "Hello"
+        input_2 = " World!"
+        stream = SeekableStream()
+        stream.write(input_1)
+        stream.write(input_2)
+        stream.seek(0)
+        self.assertEqual(stream.read(), input_1 + input_2)
+
+    def test_write_bytes(self):
+        input_1 = b"\xDE"
+        input_2 = b"\xAD"
+        stream = SeekableStream(input_1)
+        stream.seek(0, os.SEEK_END)
+        stream.write(input_2)
+        stream.seek(0, os.SEEK_SET)
+        self.assertEqual(stream.read(), b"\xDE\xAD")
+        self.assertTrue(stream.is_bytes)
+
+    def test_write_mismtached_type_throws(self):
+        string_input = "string"
+        bytes_input = b"\x00"
+        stream = SeekableStream(string_input)
+
+        with self.assertRaises(TypeError):
+            stream.write(bytes_input)
 
 
 if __name__ == "__main__":
