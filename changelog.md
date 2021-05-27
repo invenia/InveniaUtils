@@ -1,14 +1,31 @@
 # InveniaUtils
 
+## Version 0.8.0
+
+### Features
+
+ * Add utility for parsing both `xls` and `xlsx` files [!19](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/19)
+ * Add support for writing to SeekableStreams [!18](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/18)
+
+### Fixes
+
+  * Don't use empty dicts as default args [!17](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/17)
+
 ## Version 0.7.0
+
+### Features
 
   * Add custom logging handlers and formatters [!15](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/15)	
 
 ## Version 0.6.0
 
+### Features
+
   * Decode Inf DatetimeRanges [!16](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/16)
 
 ## Version 0.5.0
+
+### Features
 
   * Deploy releases to our private PyPI repo [!13](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/13), [!14](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/14)
 
