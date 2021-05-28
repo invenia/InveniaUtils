@@ -42,13 +42,25 @@ class Sheet:
         self.is_xls = is_xls
         self.sheet = sheet
         self.nrows = self._set_num_rows()
+        self.ncols = self._set_num_cols()
         self.name = self._set_name()
 
     def _set_num_rows(self):
         return self.sheet.nrows if self.is_xls else self.sheet.max_row
 
+    def _set_num_cols(self):
+        return self.sheet.ncols if self.is_xls else self.sheet.max_column
+
     def _set_name(self):
         return self.sheet.name if self.is_xls else self.sheet.title
+
+    def cell(self, row, column):
+        # openpyxl starts indexing at 1
+        return (
+            self.sheet.cell(row, column)
+            if self.is_xls
+            else self.sheet.cell(row + 1, column + 1)
+        )
 
     def row(self, row_num: int):
         # openpyxl starts indexing at 1
@@ -86,6 +98,6 @@ class Workbook:
         sheet = (
             self.workbook.sheet_by_name(sheet_name)
             if self.is_xls
-            else self.workbook.get_sheet_by_name(sheet_name)
+            else self.workbook[sheet_name]
         )
         return Sheet(self.is_xls, sheet)
