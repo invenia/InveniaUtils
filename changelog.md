@@ -1,5 +1,11 @@
 # InveniaUtils
 
+## Version 0.9.0
+
+### Features
+
+ * Update the `xlsutil` to support accessing a sheet cell given a row and column number [!21](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/21)
+
 ## Version 0.8.0
 
 ### Features
