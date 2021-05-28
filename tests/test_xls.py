@@ -109,3 +109,23 @@ class TestXLSUtil(unittest.TestCase):
         self.assertEqual(row[0]._get_cell_type(), number_cell)
         self.assertEqual(row[1]._get_cell_type(), text_cell)
         self.assertEqual(row[2]._get_cell_type(), number_cell)
+
+    def test_xls_cell(self):
+        expected_0 = ["number", "name", "value"]
+        expected_1 = [1, "A", 3]
+        workbook = self.setup_xls()
+        sheet = workbook.sheet_by_name("TestSheet")
+
+        for i in range(0, 2):
+            self.assertEqual(sheet.cell(0, i).value, expected_0[i])
+            self.assertEqual(sheet.cell(1, i).value, expected_1[i])
+
+    def test_xlsx_cell(self):
+        expected_0 = ["number", "name", "value"]
+        expected_1 = [1, "A", 3]
+        workbook = self.setup_xlsx()
+        sheet = workbook.sheet_by_name("TestSheet")
+
+        for i in range(0, 2):
+            self.assertEqual(sheet.cell(0, i).value, expected_0[i])
+            self.assertEqual(sheet.cell(1, i).value, expected_1[i])
