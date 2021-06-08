@@ -16,13 +16,27 @@ class TestXLSUtil(unittest.TestCase):
         file = open(sample_xls_path, "rb")
         content = file.read()
         self.assertNotEqual(content, None)
-        return Workbook(xls_file_name, content)
+        return Workbook(content, xls_file_name)
 
     def setup_xlsx(self):
         file = open(sample_xlsx_path, "rb")
         content = file.read()
         self.assertNotEqual(content, None)
-        return Workbook(xlsx_file_name, content)
+        return Workbook(content, xlsx_file_name)
+
+    def test_no_filename_xls(self):
+        file = open(sample_xls_path, "rb")
+        content = file.read()
+        self.assertNotEqual(content, None)
+        workbook = Workbook(content)
+        self.assertEqual(workbook.is_xls, True)
+
+    def test_no_filename_xlsx(self):
+        file = open(sample_xlsx_path, "rb")
+        content = file.read()
+        self.assertNotEqual(content, None)
+        workbook = Workbook(content)
+        self.assertEqual(workbook.is_xls, False)
 
     def test_xls_sheet_names(self):
         workbook = self.setup_xls()

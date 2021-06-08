@@ -2,7 +2,7 @@ pytz
 lxml
 openpyxl-stubs
 openpyxl
-xlrd
+xlrd>=2.0.0
 pint
 python-dateutil
 cryptography
