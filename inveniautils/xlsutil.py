@@ -1,4 +1,5 @@
 from io import BytesIO
+from typing import Optional
 
 import openpyxl
 import xlrd  # type: ignore
@@ -80,9 +81,18 @@ class Sheet:
 
 
 class Workbook:
-    def __init__(self, filename: str, content):
-        self.is_xls = filename.endswith(".xls")
-        self.workbook = self._open_workbook(content)
+    def __init__(self, content, filename: Optional[str] = None):
+        # if no filename is given assume xls and see if an error is thrown
+        if not filename:
+            try:
+                self.is_xls = True
+                self.workbook = self._open_workbook(content)
+            except xlrd.XLRDError:
+                self.is_xls = False
+                self.workbook = self._open_workbook(content)
+        else:
+            self.is_xls = filename.endswith(".xls")
+            self.workbook = self._open_workbook(content)
 
     def _open_workbook(self, content):
         return (
