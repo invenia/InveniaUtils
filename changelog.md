@@ -1,5 +1,11 @@
 # InveniaUtils
 
+## Version 0.10.0
+
+### Features
+
+ * Update the `xlsutil` to auto detect the input file type when no file name is provided [!23](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/23)
+
 ## Version 0.9.0
 
 ### Features
