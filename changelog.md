@@ -1,5 +1,11 @@
 # InveniaUtils
 
+## Version 0.11.0
+
+### Features
+
+ * Add Decimal and date support to the normalized writer. [!25](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/25)
+	
 ## Version 0.10.0
 
 ### Features

@@ -1,12 +1,12 @@
 import csv
 import logging
-import inveniautils.timestamp as timestamp
-from decimal import Decimal
-
-from inveniautils.to_str import float_to_decimal_str
-from inveniautils.timestamp import to_datetime
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from io import StringIO
+
+import inveniautils.timestamp as timestamp
+from inveniautils.timestamp import to_datetime
+from inveniautils.to_str import float_to_decimal_str
 
 BOUNDS = {(0, 0): 0, (1, 0): 1, (0, 1): 2, (1, 1): 3}
 
@@ -95,7 +95,7 @@ class NormalizedWriter(object):
                 result = to_datetime(int(value))
             elif value_type == timedelta:
                 result = timedelta(seconds=float(value))
-            elif value_types == date:
+            elif value_type == date:
                 result = date.fromisoformat(value)
             elif value_type == bool:
                 result = bool(int(value))
