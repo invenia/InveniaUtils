@@ -1,8 +1,11 @@
 import unittest
+from datetime import date, datetime, timedelta
+from decimal import Decimal
+
 import pytz
-from inveniautils.normalized_writer import NormalizedWriter
+
 from inveniautils.datetime_range import DatetimeRange
-from datetime import datetime, timedelta
+from inveniautils.normalized_writer import NormalizedWriter
 
 utc = pytz.utc
 
@@ -12,11 +15,13 @@ class MyTestCase(unittest.TestCase):
         values = [
             datetime(2020, 1, 2, 3, tzinfo=utc),
             timedelta(days=34),
+            date(2021, 8, 17),
             True,
             False,
             234234234234,
             9,
             3.14159,
+            Decimal("-000.00100"),
             "I believe in learning on the job.",
             ("You just gestured to all of me.", "Exactly!"),
             None,
@@ -25,11 +30,13 @@ class MyTestCase(unittest.TestCase):
         expected = [
             "1577934000",
             "2937600.0",
+            "2021-08-17",
             "1",
             "0",
             "234234234234",
             "9",
             "3.14159",
+            "-0.00100",
             "I believe in learning on the job.",
             "You just gestured to all of me.,Exactly!",
             None,
@@ -47,26 +54,43 @@ class MyTestCase(unittest.TestCase):
         values = [
             "1577934000",
             "2937600.0",
+            "2021-08-17",
             "1",
             "0",
             "234234234234",
             "9",
             "3.14159",
+            "-000.00100",
             "I believe in learning on the job.",
             "You just gestured to all of me.,Exactly!",
             "",
         ]
 
-        types = [datetime, timedelta, bool, bool, int, int, float, str, tuple, None]
+        types = [
+            datetime,
+            timedelta,
+            date,
+            bool,
+            bool,
+            int,
+            int,
+            float,
+            Decimal,
+            str,
+            tuple,
+            None,
+        ]
 
         expected = [
             datetime(2020, 1, 2, 3, tzinfo=utc),
             timedelta(days=34),
+            date(2021, 8, 17),
             True,
             False,
             234234234234,
             9,
             3.14159,
+            Decimal("-000.00100"),
             "I believe in learning on the job.",
             ("You just gestured to all of me.", "Exactly!"),
             None,

@@ -1,11 +1,12 @@
 import csv
 import logging
-import inveniautils.timestamp as timestamp
-
-from inveniautils.to_str import float_to_decimal_str
-from inveniautils.timestamp import to_datetime
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+from decimal import Decimal
 from io import StringIO
+
+import inveniautils.timestamp as timestamp
+from inveniautils.timestamp import to_datetime
+from inveniautils.to_str import float_to_decimal_str
 
 BOUNDS = {(0, 0): 0, (1, 0): 1, (0, 1): 2, (1, 1): 3}
 
@@ -56,12 +57,16 @@ class NormalizedWriter(object):
             result = str(timestamp.from_datetime(value))
         elif isinstance(value, timedelta):
             result = str(value.total_seconds())
+        elif isinstance(value, date):
+            result = str(value.isoformat())
         elif isinstance(value, bool):
             result = str(int(value))
         elif isinstance(value, int):
             result = str(value)
         elif isinstance(value, float):
             result = float_to_decimal_str(value)
+        elif isinstance(value, Decimal):
+            result = str(value)
         elif isinstance(value, str):
             result = str(value)
         elif isinstance(value, tuple) and isinstance(value[0], str):
@@ -90,12 +95,16 @@ class NormalizedWriter(object):
                 result = to_datetime(int(value))
             elif value_type == timedelta:
                 result = timedelta(seconds=float(value))
+            elif value_type == date:
+                result = date.fromisoformat(value)
             elif value_type == bool:
                 result = bool(int(value))
             elif value_type == int:
                 result = int(value)
             elif value_type == float:
                 result = float(value)
+            elif value_type == Decimal:
+                result = Decimal(value)
             elif issubclass(value_type, str):
                 result = str(value)
             elif value_type == tuple:
