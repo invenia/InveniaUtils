@@ -1,5 +1,11 @@
 # InveniaUtils
 
+## Version 0.11.1
+
+### Fixes
+
+ * Fix cleanup Pipeline step. [!26](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/26)
+
 ## Version 0.11.0
 
 ### Features
