@@ -7,15 +7,12 @@ include:
 
 # teardown.yml will include "Coverage", "Documentation", and "pages"
 
-"Test Python 3.7":
-  extends: .test_3_7
-
 "Test Python 3.8":
   extends: .test_3_8
 
 "Check Code Format/Typing":
   stage: setup
-  extends: .py_3_7
+  extends: .py_3_8
   script:
     - tox -re formatting,types
 

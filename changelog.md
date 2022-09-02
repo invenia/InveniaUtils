@@ -1,5 +1,11 @@
 # InveniaUtils
 
+## Version 0.12.0
+
+### Features
+
+ * Support len() operation on SeekableStreams. [!27](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/27)
+
 ## Version 0.11.1
 
 ### Fixes

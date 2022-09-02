@@ -33,7 +33,9 @@ class CustomFormatter(logging.Formatter):
             validate: Optional; validates that the format is of the correct
                 style.
         """
-        super(CustomFormatter, self).__init__(fmt=fmt, datefmt=datefmt, style=style)
+        super(CustomFormatter, self).__init__(
+            fmt=fmt, datefmt=datefmt, style=style  # type: ignore
+        )
 
         # milliseconds and timezone are added. See CustomFormatter.formatTime()
         self.default_time_format: str = "%Y-%m-%dT%H:%M:%S"
