@@ -395,6 +395,42 @@ class TestSeekableStream(unittest.TestCase):
         with self.assertRaises(TypeError):
             stream.write(bytes_input)
 
+    def test_string_len(self):
+        input_str = "hello"
+        stream = SeekableStream(input_str)
+        assert len(stream) == len(input_str)
+
+    def test_bytes_len(self):
+        input_bytes = b"hello but it is bytes"
+        stream = SeekableStream(input_bytes)
+        assert len(stream) == len(input_bytes)
+
+    def test_empty_string_len(self):
+        input_str = ""
+        stream = SeekableStream(input_str)
+        assert len(stream) == len(input_str) == 0
+
+    def test_empty_bytes_len(self):
+        input_bytes = b""
+        stream = SeekableStream(input_bytes)
+        assert len(stream) == len(input_bytes) == 0
+
+    def test_null_constructor_len(self):
+        stream = SeekableStream()
+        assert len(stream) == 0
+
+    def test_len_returns_to_position(self):
+        input_str = "hello again"
+        seek_pos = 2
+        stream = SeekableStream(input_str)
+        stream.seek(seek_pos)
+        assert stream.tell() == seek_pos
+        # make sure we calculated the full length despite
+        # seeking forward beforehand
+        assert len(stream) == len(input_str)
+        # make sure we returned to the original seek pos
+        assert stream.tell() == seek_pos
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)

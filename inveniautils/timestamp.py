@@ -3,7 +3,7 @@ from datetime import datetime
 
 from inveniautils.dates import utc
 
-invalid_timestamp = 2 ** 63 - 1
+invalid_timestamp = 2**63 - 1
 
 
 def from_datetime(date: datetime) -> int:

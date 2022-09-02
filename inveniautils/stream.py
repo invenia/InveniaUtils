@@ -275,3 +275,10 @@ class SeekableStream:
 
     def __iter__(self) -> "SeekableStream":
         return self
+
+    def __len__(self) -> int:
+        original_pos = self.tell()
+        self.seek(0, os.SEEK_END)
+        length = self.tell()
+        self.seek(original_pos)
+        return length
