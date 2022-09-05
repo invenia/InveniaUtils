@@ -1,4 +1,5 @@
 import csv
+import json
 import logging
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -71,6 +72,8 @@ class NormalizedWriter(object):
             result = str(value)
         elif isinstance(value, tuple) and isinstance(value[0], str):
             result = ",".join(value)
+        elif isinstance(value, list):
+            result = json.dumps(value)
         elif value is None:
             # csv.writer will convert None values to an empty element
             result = None
@@ -109,6 +112,8 @@ class NormalizedWriter(object):
                 result = str(value)
             elif value_type == tuple:
                 result = tuple(value.split(","))
+            elif value_type == list:
+                result = json.loads(value)
             else:
                 raise TypeError(
                     "Unable to decode '{}'. Only date, numeric, string-types"

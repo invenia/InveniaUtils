@@ -24,6 +24,9 @@ class MyTestCase(unittest.TestCase):
             Decimal("-000.00100"),
             "I believe in learning on the job.",
             ("You just gestured to all of me.", "Exactly!"),
+            ["a", "b", "c"],
+            [111, 222, 333],
+            [1.1, 2.2, 3.3],
             None,
         ]
 
@@ -39,6 +42,9 @@ class MyTestCase(unittest.TestCase):
             "-0.00100",
             "I believe in learning on the job.",
             "You just gestured to all of me.,Exactly!",
+            '["a", "b", "c"]',
+            "[111, 222, 333]",
+            "[1.1, 2.2, 3.3]",
             None,
         ]
 
@@ -63,6 +69,9 @@ class MyTestCase(unittest.TestCase):
             "-000.00100",
             "I believe in learning on the job.",
             "You just gestured to all of me.,Exactly!",
+            '["a", "b", "c"]',
+            "[111, 222, 333]",
+            "[1.1, 2.2, 3.3]",
             "",
         ]
 
@@ -78,6 +87,9 @@ class MyTestCase(unittest.TestCase):
             Decimal,
             str,
             tuple,
+            list,
+            list,
+            list,
             None,
         ]
 
@@ -93,6 +105,9 @@ class MyTestCase(unittest.TestCase):
             Decimal("-000.00100"),
             "I believe in learning on the job.",
             ("You just gestured to all of me.", "Exactly!"),
+            ["a", "b", "c"],
+            [111, 222, 333],
+            [1.1, 2.2, 3.3],
             None,
         ]
 
