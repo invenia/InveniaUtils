@@ -1,5 +1,11 @@
 # InveniaUtils
 
+## Version 0.13.0
+
+### Features
+
+ * Support Lists in the Normalized Writer [!28](https://gitlab.invenia.ca/invenia/inveniautils/-/merge_requests/28)
+
 ## Version 0.12.0
 
 ### Features
